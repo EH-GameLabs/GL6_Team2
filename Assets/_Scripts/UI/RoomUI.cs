@@ -1,0 +1,46 @@
+using TMPro;
+using UnityEngine;
+
+public class RoomUI : BaseUI
+{
+    [Header("Room UI Elements")]
+    [SerializeField] private TextMeshProUGUI player1Text;
+    [SerializeField] private TextMeshProUGUI player2Text;
+    [SerializeField] public TextMeshProUGUI roomCodeText;
+
+    [SerializeField] public GameObject startGameButton;
+    [SerializeField] private GameObject leaveButton;
+
+    public void UpdatePlayerList(string player1, string player2, bool isHost)
+    {
+        player1Text.text = player1;
+        player2Text.text = player2;
+
+        if (isHost)
+        {
+            player1Text.color = Color.blue;
+            player1Text.fontStyle = FontStyles.Bold;
+
+            player2Text.color = Color.black;
+        }
+        else
+        {
+            player1Text.color = Color.black;
+
+            player2Text.color = Color.blue;
+            player2Text.fontStyle = FontStyles.Bold;
+        }
+    }
+
+    public void StartGame()
+    {
+        GameStateManager.Instance.CurrentGameState = GameState.Loading;
+        LobbyManager.Instance.StartGame();
+    }
+
+    public void LeaveGame()
+    {
+        GameStateManager.Instance.CurrentGameState = GameState.Loading;
+        LobbyManager.Instance.LeaveRoom();
+    }
+}

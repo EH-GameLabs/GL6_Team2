@@ -97,7 +97,6 @@ public class LobbyManager : NetworkBehaviour
     {
         int retryCount = 0;
         int maxRetries = 10;
-        float retryDelay = 1f; // in secondi
 
         try
         {
@@ -130,6 +129,23 @@ public class LobbyManager : NetworkBehaviour
                         }
                         break;
                     }
+                    else
+                    {
+                        if (IsHost()) return;
+
+                        // Non ancora pronto: attendi e riprova
+                        retryCount++;
+                        Debug.Log($"Lobby not updated yet. Retry {retryCount}/{maxRetries}...");
+                        //await Task.Delay((int)(retryDelay * 1000));
+                        // Ricarica la lobby
+                        CurrentLobby = await LobbyService.Instance.GetLobbyAsync(CurrentLobby.Id);
+                        VisualizeRoomDetails();
+                    }
+                }
+
+                if (retryCount >= maxRetries)
+                {
+                    Debug.Log("Retry limit reached. The game did not start.");
                 }
             }
         }
@@ -222,6 +238,18 @@ public class LobbyManager : NetworkBehaviour
                 {
                     playerNames.Add("Unknown");
                 }
+
+                //// Visualizza il bottone di kick solo per il host (eccetto se si tratta di se stessi)
+                //Button kickBtn = newPlayerInfo.GetComponentInChildren<Button>(true);
+                //if (IsHost() && player.Id != playerId)
+                //{
+                //    kickBtn.onClick.AddListener(() => KickPlayer(player.Id));
+                //    kickBtn.gameObject.SetActive(true);
+                //}
+                //else
+                //{
+                //    kickBtn.gameObject.SetActive(false);
+                //}
             }
 
             roomUI.startGameButton.SetActive(IsHost());

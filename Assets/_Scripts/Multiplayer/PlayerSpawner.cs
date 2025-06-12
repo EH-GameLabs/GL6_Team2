@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerSpawner : NetworkBehaviour
 {
-    [SerializeField] private GameObject playerPrefab; //add prefab in inspector
+    [SerializeField] private GameObject playerPrefab;
 
     [ServerRpc(RequireOwnership = false)] //server owns this object but client can request a spawn
     public void SpawnPlayerServerRpc(ulong clientId)

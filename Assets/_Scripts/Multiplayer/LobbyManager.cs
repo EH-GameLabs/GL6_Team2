@@ -350,7 +350,11 @@ public class LobbyManager : NetworkBehaviour
     public async void StartGame()
     {
         if (!IsHost()) return;
-        if (CurrentLobby.Players.Count != 2) return;
+        if (CurrentLobby.Players.Count != 2)
+        {
+            Debug.LogWarning("Il gioco può iniziare solo con 2 giocatori.");
+            return;
+        }
 
         try
         {

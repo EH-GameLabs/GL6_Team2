@@ -71,12 +71,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  playerNameInput: {fileID: 0}
   maxPlayers: 2
-  roomCodeText: {fileID: 0}
-  playerInfoContent: {fileID: 0}
-  playerInfoPrefab: {fileID: 0}
-  leaveRoomButton: {fileID: 0}
-  startGameButton: {fileID: 0}
-  roomCodeInput: {fileID: 0}
-  joinRoomButton: {fileID: 0}

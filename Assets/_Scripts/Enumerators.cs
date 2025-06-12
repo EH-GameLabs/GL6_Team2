@@ -13,4 +13,5 @@ public enum GameState
     Options,
     Win,
     Lose,
+    LocalMultiplayer,
 }

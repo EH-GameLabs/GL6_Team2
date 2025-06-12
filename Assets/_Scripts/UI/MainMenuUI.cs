@@ -19,6 +19,17 @@ public class MainMenuUI : BaseUI
         PlayerPrefs.SetString("Name", newName);
     }
 
+    public void StartSinglePlayer()
+    {
+        GameStateManager.Instance.CurrentGameState = GameState.Loading;
+        GameManager.Instance.SetupGame(GameMode.SinglePlayer);
+    }
+
+    public void StartLocalMultiplayer()
+    {
+        GameStateManager.Instance.CurrentGameState = GameState.LocalMultiplayer;
+    }
+
     public void CreateLobby()
     {
         GameStateManager.Instance.CurrentGameState = GameState.Loading;

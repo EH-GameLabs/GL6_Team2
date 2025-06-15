@@ -25,7 +25,7 @@ public class CharacterMotor : MonoBehaviour
     {
         if (currentInput.Move != Vector2.zero)
         {
-            Vector3 movement = new Vector3(currentInput.Move.x, 0, currentInput.Move.y);
+            Vector3 movement = new Vector3(currentInput.Move.x, 0, 0);
             transform.Translate(movement * moveSpeed * Time.deltaTime);
         }
     }

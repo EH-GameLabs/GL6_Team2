@@ -34,7 +34,6 @@ public class RoomUI : BaseUI
 
     public void StartGame()
     {
-        GameStateManager.Instance.CurrentGameState = GameState.Loading;
         LobbyManager.Instance.StartGame();
     }
 

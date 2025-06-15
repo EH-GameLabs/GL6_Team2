@@ -113,6 +113,7 @@ public class LobbyManager : NetworkBehaviour
                     {
                         if (!IsHost())
                         {
+                            GameStateManager.Instance.CurrentGameState = GameState.Loading;
                             string relayJoinCode = isGameStartedData.Value;
                             Debug.Log("RelayJoinCode (client): " + relayJoinCode);
 
@@ -122,9 +123,27 @@ public class LobbyManager : NetworkBehaviour
                             UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
                             transport.SetRelayServerData(relayServerData);
 
+                            NetworkManager.Singleton.OnClientConnectedCallback += (ulong clientId) =>
+                            {
+                                Debug.Log($"Client {clientId} connected to the host.");
+                                if (NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost)
+                                {
+                                    // Chiama la ServerRpc
+                                    SerializeGameServerRpc();
+                                }
+                            };
+
                             if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost)
                             {
-                                NetworkManager.Singleton.StartClient();
+                                if (!NetworkManager.Singleton.StartClient())
+                                {
+                                    Debug.LogError("Impossibile avviare il client.");
+                                }
+                                else
+                                {
+                                    StopAllCoroutines();
+                                    return;
+                                }
                             }
                         }
                         break;
@@ -158,6 +177,20 @@ public class LobbyManager : NetworkBehaviour
                 // Gestisci l'uscita dalla lobby se necessario
             }
         }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SerializeGameServerRpc()
+    {
+        GameManager.Instance.SetupGame(GameMode.OnlineMultiplayer);
+        SerializeGameClientRpc();
+    }
+
+    [ClientRpc]
+    public void SerializeGameClientRpc()
+    {
+        Debug.Log("Game state serialized and sent to clients.");
+        GameStateManager.Instance.CurrentGameState = GameState.Playing;
     }
 
     public async void CreateLobby()
@@ -356,6 +389,7 @@ public class LobbyManager : NetworkBehaviour
             return;
         }
 
+        GameStateManager.Instance.CurrentGameState = GameState.Loading;
         try
         {
             Debug.Log("Avvio del gioco...");
@@ -382,6 +416,9 @@ public class LobbyManager : NetworkBehaviour
                 }
             });
             CurrentLobby = updatedLobby;
+
+            //GameStateManager.Instance.CurrentGameState = GameState.Playing;
+
         }
         catch (LobbyServiceException e)
         {

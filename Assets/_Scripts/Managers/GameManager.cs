@@ -1,4 +1,6 @@
+using System;
 using Unity.Netcode;
+using Unity.Netcode.Components;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,7 +9,7 @@ public class GameManager : NetworkBehaviour
     public static GameManager Instance { get; private set; }
 
     [Header("Configuration")]
-    [SerializeField] private GameMode startingMode;
+    [ReadOnly] public GameMode gameMode;
     [SerializeField] private GameObject playerControllerPrefab; // Prefab con solo PlayerInput
 
     [Header("Character Prefabs")]
@@ -36,9 +38,6 @@ public class GameManager : NetworkBehaviour
                 // Istanzia un solo controller di input e lo registra per il single player (ID 0)
                 var playerInput = PlayerInput.Instantiate(playerControllerPrefab, controlScheme: "Keyboard&Mouse", pairWithDevice: Keyboard.current);
                 InputManager.Instance.RegisterPlayer(0, CharacterID.CharacterA, playerInput); // Inizia controllando A
-                // Istanzia i due personaggi nella scena
-                Instantiate(characterAPrefab, new Vector3(-2, 0, 0), Quaternion.identity);
-                Instantiate(characterBPrefab, new Vector3(2, 0, 0), Quaternion.identity);
                 GameStateManager.Instance.CurrentGameState = GameState.Playing;
                 break;
 
@@ -47,8 +46,9 @@ public class GameManager : NetworkBehaviour
                 break;
 
             case GameMode.OnlineMultiplayer:
-                Instantiate(characterAPrefab, new Vector3(-2, 0, 0), Quaternion.identity);
-                Instantiate(characterBPrefab, new Vector3(2, 0, 0), Quaternion.identity);
+
+                AddNetworkComponents(characterAPrefab);
+                AddNetworkComponents(characterBPrefab);
 
                 // La logica di setup online è gestita da Netcode, Lobby, etc.
                 // Il GameManager qui potrebbe solo settare la modalità.
@@ -57,17 +57,35 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    private void AddNetworkComponents(GameObject tmp)
+    {
+        if (!tmp.GetComponent<NetworkObject>().IsSpawned)
+        {
+            tmp.GetComponent<NetworkObject>().Spawn();
+        }
+
+        NetworkTransform networkTransform = tmp.GetComponent<NetworkTransform>();
+
+        networkTransform.SyncPositionZ = false;
+
+        networkTransform.SyncScaleX = false;
+        networkTransform.SyncScaleY = false;
+        networkTransform.SyncScaleZ = false;
+
+        //networkTransform.SyncRotAngleX = false;
+        //networkTransform.SyncRotAngleY = false;
+        //networkTransform.SyncRotAngleZ = false;
+
+        //tmp.AddComponent<NetworkAnimator>();
+
+        Debug.Log("Added Network components to: " + tmp.name);
+    }
+
     public void SetupLocalMultiplayerGame(int pad1Index, int pad2Index)
     {
         InputManager.Instance.SetGameMode(GameMode.LocalMultiplayer);
 
         var pim = gameObject.GetComponent<PlayerInputManager>();
-        // Non assegnare playerPrefab qui se non vuoi che PlayerInputManager spawni qualcosa
-        // pim.playerPrefab = playerControllerPrefab; // Rimuovi o commenta
-
-        // Istanzia i due personaggi (mantieni il tuo codice originale)
-        GameObject charA = Instantiate(characterAPrefab, new Vector3(-2, 0, 0), Quaternion.identity);
-        GameObject charB = Instantiate(characterBPrefab, new Vector3(2, 0, 0), Quaternion.identity);
 
         // Crea PlayerInput per il primo giocatore
         PlayerInput player1Input = PlayerInput.Instantiate(playerControllerPrefab, controlScheme: "Gamepad", pairWithDevice: Gamepad.all[pad1Index]);

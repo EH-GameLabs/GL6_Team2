@@ -3,18 +3,25 @@ using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Users;
 
 public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    [Header("GameObjects Prefabs")]
+    public GameObject player1Prefab;
+    public GameObject player2Prefab;
+    public Transform player1SpawnPoint;
+    public Transform player2SpawnPoint;
+
     [Header("Configuration")]
     [ReadOnly] public GameMode gameMode;
-    [SerializeField] private GameObject playerControllerPrefab; // Prefab con solo PlayerInput
+    //[SerializeField] private GameObject playerControllerPrefab; // Prefab con solo PlayerInput
 
-    [Header("Character Prefabs")]
-    [SerializeField] private GameObject characterAPrefab;
-    [SerializeField] private GameObject characterBPrefab;
+    //[Header("Character Prefabs")]
+    //[SerializeField] private GameObject characterAPrefab;
+    //[SerializeField] private GameObject characterBPrefab;
 
     private void Awake()
     {
@@ -30,14 +37,16 @@ public class GameManager : NetworkBehaviour
 
     public void SetupGame(GameMode mode)
     {
-        InputManager.Instance.SetGameMode(mode);
-
         switch (mode)
         {
             case GameMode.SinglePlayer:
-                // Istanzia un solo controller di input e lo registra per il single player (ID 0)
-                var playerInput = PlayerInput.Instantiate(playerControllerPrefab, controlScheme: "Keyboard&Mouse", pairWithDevice: Keyboard.current);
-                InputManager.Instance.RegisterPlayer(0, CharacterID.CharacterA, playerInput); // Inizia controllando A
+                GameObject g1 = Instantiate(player1Prefab, player1SpawnPoint.position, Quaternion.identity);
+                g1.name = "Player1";
+                GameObject g2 = Instantiate(player2Prefab, player2SpawnPoint.position, Quaternion.identity);
+                g2.name = "Player2";
+
+                InputManager.Instance.RegisterPlayer(0, CharacterID.CharacterA, g1.GetComponent<PlayerInput>());
+
                 GameStateManager.Instance.CurrentGameState = GameState.Playing;
                 break;
 
@@ -47,12 +56,6 @@ public class GameManager : NetworkBehaviour
 
             case GameMode.OnlineMultiplayer:
 
-                AddNetworkComponents(characterAPrefab);
-                AddNetworkComponents(characterBPrefab);
-
-                // La logica di setup online è gestita da Netcode, Lobby, etc.
-                // Il GameManager qui potrebbe solo settare la modalità.
-                // Lo spawn e la registrazione verranno gestiti da un altro script (vedi sotto).
                 break;
         }
     }
@@ -83,17 +86,36 @@ public class GameManager : NetworkBehaviour
 
     public void SetupLocalMultiplayerGame(int pad1Index, int pad2Index)
     {
-        InputManager.Instance.SetGameMode(GameMode.LocalMultiplayer);
+        // Verifica che i gamepad esistano
+        if (pad1Index >= Gamepad.all.Count || pad2Index >= Gamepad.all.Count)
+        {
+            Debug.LogError("Not enough gamepads connected!");
+            return;
+        }
 
-        var pim = gameObject.GetComponent<PlayerInputManager>();
+        // Istanzia usando PlayerInput.Instantiate per maggiore controllo
+        PlayerInput player1Input = PlayerInput.Instantiate(
+            player1Prefab,
+            controlScheme: "Gamepad",
+            pairWithDevice: Gamepad.all[pad1Index]
+        );
 
-        // Crea PlayerInput per il primo giocatore
-        PlayerInput player1Input = PlayerInput.Instantiate(playerControllerPrefab, controlScheme: "Gamepad", pairWithDevice: Gamepad.all[pad1Index]);
-        InputManager.Instance.RegisterPlayer(0, CharacterID.CharacterA, player1Input);
+        PlayerInput player2Input = PlayerInput.Instantiate(
+            player2Prefab,
+            controlScheme: "Gamepad",
+            pairWithDevice: Gamepad.all[pad2Index]
+        );
 
-        // Crea PlayerInput per il secondo giocatore
-        PlayerInput player2Input = PlayerInput.Instantiate(playerControllerPrefab, controlScheme: "Gamepad", pairWithDevice: Gamepad.all[pad2Index]);
-        InputManager.Instance.RegisterPlayer(1, CharacterID.CharacterB, player2Input);
+        // Posiziona i player
+        player1Input.transform.position = player1SpawnPoint.position;
+        player1Input.transform.name = "Player1";
+
+        player2Input.transform.position = player2SpawnPoint.position;
+        player2Input.transform.name = "Player2";
+
+        // Registra i player
+        InputManager.Instance.RegisterLocalPlayer(0, CharacterID.CharacterA, player1Input);
+        InputManager.Instance.RegisterLocalPlayer(1, CharacterID.CharacterB, player2Input);
 
         GameStateManager.Instance.CurrentGameState = GameState.Playing;
     }

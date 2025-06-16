@@ -1,6 +1,9 @@
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.Windows;
 
-public class CharacterMotor : MonoBehaviour
+public class CharacterMotor : NetworkBehaviour
 {
     [Header("Character Identity")]
     [Tooltip("Imposta questo nell'inspector: CharacterA o CharacterB")]
@@ -9,12 +12,54 @@ public class CharacterMotor : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
 
-    private PlayerInputData currentInput;
+
+    [SerializeField][ReadOnly] private PlayerInputData currentInput;
+    [SerializeField][ReadOnly] private GameMode gameMode;
+
+    public override void OnNetworkSpawn()
+    {
+        // Esegui solo sul proprietario di questo oggetto
+        if (!IsOwner) return;
+
+        PlayerInput input = GetComponent<PlayerInput>();
+        input.enabled = true;
+        //input.actions = inputActions;
+
+        // Determina quale personaggio controllare in base all'ID del client.
+        // L'Host (ClientId 0) controlla A, il primo client che si unisce (ClientId 1) controlla B.
+        // Questa logica può essere resa più complessa (es. scelta nel lobby).
+        CharacterID controlledCharacter = (OwnerClientId == 0) ? CharacterID.CharacterA : CharacterID.CharacterB;
+
+        // Registra questo giocatore online con l'InputManager
+        InputManager.Instance.RegisterLocalPlayer((int)OwnerClientId, controlledCharacter, input);
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (!IsOwner) return;
+
+        InputManager.Instance.UnregisterPlayer((int)OwnerClientId);
+    }
+
+    private void Start()
+    {
+        gameMode = GameManager.Instance.gameMode;
+
+        if (gameMode == GameMode.OnlineMultiplayer && !IsOwner)
+        {
+            return;
+        }
+    }
 
     void Update()
     {
+        if (gameMode == GameMode.OnlineMultiplayer && !IsOwner)
+        {
+            return;
+        }
+
         // Chiede costantemente all'InputManager i suoi input
-        currentInput = InputManager.Instance.GetInputForCharacter(characterId);
+        currentInput = InputManager.Instance.GetInputForCharacter(characterId, gameMode);
 
         // Applica gli input
         HandleMovement();

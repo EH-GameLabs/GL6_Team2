@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
@@ -13,9 +11,6 @@ using Unity.Services.Lobbies.Models;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using WebSocketSharp;
 
 public class LobbyManager : NetworkBehaviour
 {
@@ -119,9 +114,13 @@ public class LobbyManager : NetworkBehaviour
 
                             // Unisciti alla Relay allocation
                             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(relayJoinCode);
-                            RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
-                            UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-                            transport.SetRelayServerData(relayServerData);
+                            //NEW
+                            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(AllocationUtils.ToRelayServerData(joinAllocation, "dtls"));
+
+                            // OLD
+                            //RelayServerData relayServerData = new AllocationUtils.ToRelayServerData(hostAllocation, connectionType);
+                            //UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+                            //transport.SetRelayServerData(relayServerData);
 
                             NetworkManager.Singleton.OnClientConnectedCallback += (ulong clientId) =>
                             {
@@ -164,7 +163,7 @@ public class LobbyManager : NetworkBehaviour
 
                 if (retryCount >= maxRetries)
                 {
-                    Debug.Log("Retry limit reached. The game did not start.");
+                    //Debug.Log("Retry limit reached. The game did not start.");
                 }
             }
         }
@@ -182,7 +181,6 @@ public class LobbyManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void SerializeGameServerRpc()
     {
-        GameManager.Instance.SetupGame(GameMode.OnlineMultiplayer);
         SerializeGameClientRpc();
     }
 
@@ -190,6 +188,7 @@ public class LobbyManager : NetworkBehaviour
     public void SerializeGameClientRpc()
     {
         Debug.Log("Game state serialized and sent to clients.");
+        GameManager.Instance.SetupGame(GameMode.OnlineMultiplayer);
         GameStateManager.Instance.CurrentGameState = GameState.Playing;
     }
 
@@ -221,31 +220,6 @@ public class LobbyManager : NetworkBehaviour
         }
     }
 
-    //public async void PlayAlone()
-    //{
-    //    try
-    //    {
-    //        string lobbyName = "New Lobby" + UnityEngine.Random.Range(0, 99999);
-    //        CreateLobbyOptions options = new CreateLobbyOptions
-    //        {
-    //            IsPrivate = true,
-    //            Player = GetPlayer(),
-    //            Data = new Dictionary<string, DataObject>
-    //            {
-    //                {"IsGameStarted", new DataObject(DataObject.VisibilityOptions.Member, "0")}
-    //            }
-    //        };
-
-    //        CurrentLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
-
-    //        StartGame();
-    //    }
-    //    catch (LobbyServiceException e)
-    //    {
-    //        Debug.LogError("Errore nella creazione della lobby: " + e.Message);
-    //    }
-    //}
-
     private void EnterRoom()
     {
         GameStateManager.Instance.CurrentGameState = GameState.Room;
@@ -271,18 +245,6 @@ public class LobbyManager : NetworkBehaviour
                 {
                     playerNames.Add("Unknown");
                 }
-
-                //// Visualizza il bottone di kick solo per il host (eccetto se si tratta di se stessi)
-                //Button kickBtn = newPlayerInfo.GetComponentInChildren<Button>(true);
-                //if (IsHost() && player.Id != playerId)
-                //{
-                //    kickBtn.onClick.AddListener(() => KickPlayer(player.Id));
-                //    kickBtn.gameObject.SetActive(true);
-                //}
-                //else
-                //{
-                //    kickBtn.gameObject.SetActive(false);
-                //}
             }
 
             roomUI.startGameButton.SetActive(IsHost());
@@ -383,22 +345,27 @@ public class LobbyManager : NetworkBehaviour
     public async void StartGame()
     {
         if (!IsHost()) return;
-        if (CurrentLobby.Players.Count != 2)
-        {
-            Debug.LogWarning("Il gioco può iniziare solo con 2 giocatori.");
-            return;
-        }
+        //if (CurrentLobby.Players.Count != 2)
+        //{
+        //    Debug.LogWarning("Il gioco può iniziare solo con 2 giocatori.");
+        //    return;
+        //}
 
         GameStateManager.Instance.CurrentGameState = GameState.Loading;
         try
         {
             Debug.Log("Avvio del gioco...");
             Allocation allocation = await RelayService.Instance.CreateAllocationAsync(maxPlayers);
+            // NEW
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(AllocationUtils.ToRelayServerData(allocation, "dtls"));
+
             string relayJoinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
             Debug.Log(relayJoinCode);
-            RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
-            UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-            transport.SetRelayServerData(relayServerData);
+
+            // OLD
+            //RelayServerData relayServerData = new RelayServerData();
+            //UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            //transport.SetRelayServerData(relayServerData);
 
             bool hostStarted = NetworkManager.Singleton.StartHost();
             if (!hostStarted)

@@ -17,6 +17,7 @@ public enum GameMode
 
 // Struct che rappresenta una "istantanea" completa degli input.
 // Questa è l'informazione che i personaggi riceveranno.
+[System.Serializable]
 public struct PlayerInputData
 {
     public Vector2 Move;

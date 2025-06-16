@@ -155,6 +155,17 @@
                 },
                 {
                     "name": "",
+                    "id": "054a6bda-8d53-411c-a87f-130b851e283d",
+                    "path": "<HID::Bigben Interactive Revolution Pro Controller 3>/stick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "eb40bb66-4559-4dfa-9a2f-820438abb426",
                     "path": "<Keyboard>/space",
                     "interactions": "",

@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Users;
 
 public class InputManager : MonoBehaviour
 {
     public static InputManager Instance { get; private set; }
-
-    [Header("Game State")]
-    [SerializeField] private GameMode currentGameMode = GameMode.SinglePlayer;
 
     // Variabile per lo switch in single-player
     private CharacterID activeSinglePlayerCharacter = CharacterID.CharacterA;
@@ -30,13 +29,7 @@ public class InputManager : MonoBehaviour
 
     // --- METODI PUBBLICI DI CONFIGURAZIONE ---
 
-    public void SetGameMode(GameMode mode)
-    {
-        currentGameMode = mode;
-        Debug.Log($"InputManager mode set to: {mode}");
-    }
-
-    public void RegisterPlayer(int playerId, CharacterID characterId, PlayerInput input)
+    public void RegisterLocalPlayer(int playerId, CharacterID characterId, PlayerInput input)
     {
         playerInputs[playerId] = input;
         playerCharacterMap[playerId] = characterId;
@@ -45,6 +38,50 @@ public class InputManager : MonoBehaviour
         // Iscriviti agli eventi di input di questo specifico giocatore
         SubscribeToPlayerInputEvents(input, playerId);
         Debug.Log($"Player {playerId} registered to control {characterId}");
+    }
+
+    public void RegisterPlayer(int playerId, CharacterID characterId, PlayerInput input)
+    {
+        playerInputs[playerId] = input;
+        playerCharacterMap[playerId] = characterId;
+        playerInputData[playerId] = new PlayerInputData();
+
+        // Configura auto-switch
+        input.neverAutoSwitchControlSchemes = false;
+
+        // Configura dispositivi
+        ConfigureAllDevices(input);
+
+        // Ascolta i cambi di schema
+        input.onControlsChanged += (pi) => OnControlSchemeChanged(pi, playerId);
+
+        SubscribeToPlayerInputEvents(input, playerId);
+        Debug.Log($"Player {playerId} registered with auto control scheme switching");
+    }
+
+    private void OnControlSchemeChanged(PlayerInput playerInput, int playerId)
+    {
+        string currentScheme = playerInput.currentControlScheme;
+        Debug.Log($"Player {playerId} switched to control scheme: {currentScheme}");
+
+        //// Aggiorna UI o altri sistemi basati sul nuovo schema
+        //UpdateUIForControlScheme(playerId, currentScheme);
+        //UpdateInputPrompts(playerId, currentScheme);
+    }
+
+    private void ConfigureAllDevices(PlayerInput playerInput)
+    {
+        // Pair con tutti i dispositivi disponibili
+        var user = playerInput.user;
+        user.UnpairDevices();
+
+        foreach (var device in InputSystem.devices)
+        {
+            if (device is Keyboard || device is Mouse || device is Gamepad)
+            {
+                InputUser.PerformPairingWithDevice(device, user);
+            }
+        }
     }
 
     public void UnregisterPlayer(int playerId)
@@ -64,7 +101,7 @@ public class InputManager : MonoBehaviour
     /// <summary>
     /// Qualsiasi script di un personaggio chiama questo metodo per ottenere i suoi input.
     /// </summary>
-    public PlayerInputData GetInputForCharacter(CharacterID characterId)
+    public PlayerInputData GetInputForCharacter(CharacterID characterId, GameMode currentGameMode)
     {
         switch (currentGameMode)
         {
@@ -137,7 +174,7 @@ public class InputManager : MonoBehaviour
     private void HandleSwitchCharacter(int playerId)
     {
         // Lo switch ha senso solo in single player e per il giocatore 0
-        if (currentGameMode == GameMode.SinglePlayer && playerId == 0)
+        if (GameManager.Instance.gameMode == GameMode.SinglePlayer && playerId == 0)
         {
             activeSinglePlayerCharacter = (activeSinglePlayerCharacter == CharacterID.CharacterA)
                 ? CharacterID.CharacterB

@@ -1,20 +1,41 @@
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerSpawner : NetworkBehaviour
 {
-    [SerializeField] private GameObject playerPrefab;
 
-    [ServerRpc(RequireOwnership = false)] //server owns this object but client can request a spawn
+    [ServerRpc(RequireOwnership = false)]
     public void SpawnPlayerServerRpc(ulong clientId)
     {
-        GameObject newPlayer;
+        GameObject playerPrefab;
+        Transform spawnPoint;
 
-        newPlayer = Instantiate(playerPrefab);
+        // Determina quale prefab usare basandosi sull'ID del client
+        // Client 0 = Player 1, Client 1 = Player 2
+        if (clientId == 0)
+        {
+            playerPrefab = GameManager.Instance.player1Prefab;
+            spawnPoint = GameManager.Instance.player1SpawnPoint;
+        }
+        else
+        {
+            playerPrefab = GameManager.Instance.player2Prefab;
+            spawnPoint = GameManager.Instance.player2SpawnPoint;
+        }
 
+        PlayerInput newPlayer = PlayerInput.Instantiate(
+            playerPrefab,
+            controlScheme: "Keyboard&Mouse",
+            pairWithDevices: new InputDevice[] { Keyboard.current, Mouse.current }
+        );
+
+        //GameObject newPlayer = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
         NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
-        newPlayer.SetActive(true);
+        //newPlayer.SetActive(true);
         netObj.SpawnAsPlayerObject(clientId, true);
+
+        Debug.Log($"Spawned player prefab for client {clientId}");
     }
 
     public override void OnNetworkSpawn()

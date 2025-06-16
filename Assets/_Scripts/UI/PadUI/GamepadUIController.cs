@@ -21,12 +21,10 @@ public class GamepadUIController : MonoBehaviour
         navigationInput = value.Get<Vector2>();
         if (navigationInput.x == -1)
         {
-            Debug.Log("Navigating Left");
             localMultiplayerUI.NavigatePlayerToDir(playerInput.playerIndex, false);
         }
         else if (navigationInput.x == 1)
         {
-            Debug.Log("Navigating Right");
             localMultiplayerUI.NavigatePlayerToDir(playerInput.playerIndex, true);
         }
     }

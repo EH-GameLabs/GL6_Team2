@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.InputSystem;
@@ -33,9 +34,11 @@ public class InputManager : MonoBehaviour
     {
         playerInputs[playerId] = input;
         playerCharacterMap[playerId] = characterId;
-        playerInputData[playerId] = new PlayerInputData(); // Inizializza i dati di input
+        playerInputData[playerId] = new PlayerInputData();
 
-        // Iscriviti agli eventi di input di questo specifico giocatore
+        // AGGIUNGI QUESTA LINEA - Abilita gli actions
+        input.actions.Enable();
+
         SubscribeToPlayerInputEvents(input, playerId);
         Debug.Log($"Player {playerId} registered to control {characterId}");
     }
@@ -136,10 +139,28 @@ public class InputManager : MonoBehaviour
     private void SubscribeToPlayerInputEvents(PlayerInput input, int playerId)
     {
         var actions = input.actions;
-        actions["Move"].performed += ctx => HandleMove(ctx, playerId);
+
+        // Debug per verificare che gli actions esistano
+        Debug.Log($"Available actions for player {playerId}: {string.Join(", ", actions.actionMaps.SelectMany(am => am.actions).Select(a => a.name))}");
+
+        // Verifica che gli actions siano abilitati
+        Debug.Log($"Actions enabled for player {playerId}: {actions.enabled}");
+
+        actions["Move"].performed += ctx =>
+        {
+            Debug.Log($"Player {playerId} Move performed: {ctx.ReadValue<Vector2>()}");
+            HandleMove(ctx, playerId);
+        };
+
         actions["Move"].canceled += ctx => HandleMove(ctx, playerId);
-        actions["Jump"].performed += ctx => HandleJump(ctx, playerId);
+        actions["Jump"].performed += ctx =>
+        {
+            Debug.Log($"Player {playerId} Jump performed");
+            HandleJump(ctx, playerId);
+        };
         actions["Jump"].canceled += ctx => HandleJump(ctx, playerId);
+
+        // ... altri actions
         actions["Interact"].performed += ctx => HandleInteract(ctx, playerId);
         actions["Interact"].canceled += ctx => HandleInteract(ctx, playerId);
         actions["SwitchCharacter"].performed += ctx => HandleSwitchCharacter(playerId);

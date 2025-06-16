@@ -45,7 +45,10 @@ public class GameManager : NetworkBehaviour
                 GameObject g2 = Instantiate(player2Prefab, player2SpawnPoint.position, Quaternion.identity);
                 g2.name = "Player2";
 
-                InputManager.Instance.RegisterPlayer(0, CharacterID.CharacterA, g1.GetComponent<PlayerInput>());
+                PlayerInput playerInput = g1.GetComponent<PlayerInput>();
+                playerInput.enabled = true;
+
+                InputManager.Instance.RegisterPlayer(0, CharacterID.CharacterA, playerInput);
 
                 GameStateManager.Instance.CurrentGameState = GameState.Playing;
                 break;
@@ -93,30 +96,54 @@ public class GameManager : NetworkBehaviour
             return;
         }
 
-        // Istanzia usando PlayerInput.Instantiate per maggiore controllo
-        PlayerInput player1Input = PlayerInput.Instantiate(
-            player1Prefab,
-            controlScheme: "Gamepad",
-            pairWithDevice: Gamepad.all[pad1Index]
-        );
+        GameObject p1 = Instantiate(player1Prefab, player1SpawnPoint.position, Quaternion.identity);
+        GameObject p2 = Instantiate(player2Prefab, player2SpawnPoint.position, Quaternion.identity);
 
-        PlayerInput player2Input = PlayerInput.Instantiate(
-            player2Prefab,
-            controlScheme: "Gamepad",
-            pairWithDevice: Gamepad.all[pad2Index]
-        );
+        if (!p1.TryGetComponent<PlayerInput>(out var player1Input))
+        {
+            player1Input = p1.AddComponent<PlayerInput>();
+        }
+        else
+        {
+            player1Input.enabled = true;
+        }
 
-        // Posiziona i player
-        player1Input.transform.position = player1SpawnPoint.position;
-        player1Input.transform.name = "Player1";
+        if (!p2.TryGetComponent<PlayerInput>(out var player2Input))
+        {
+            player2Input = p2.AddComponent<PlayerInput>();
+        }
+        else
+        {
+            player2Input.enabled = true;
+        }
 
-        player2Input.transform.position = player2SpawnPoint.position;
-        player2Input.transform.name = "Player2";
+
+        ConfigurePlayerInput(player1Input, Gamepad.all[pad1Index], "Gamepad");
+        ConfigurePlayerInput(player2Input, Gamepad.all[pad2Index], "Gamepad");
 
         // Registra i player
         InputManager.Instance.RegisterLocalPlayer(0, CharacterID.CharacterA, player1Input);
         InputManager.Instance.RegisterLocalPlayer(1, CharacterID.CharacterB, player2Input);
 
         GameStateManager.Instance.CurrentGameState = GameState.Playing;
+    }
+
+    private void ConfigurePlayerInput(PlayerInput playerInput, InputDevice device, string controlScheme)
+    {
+        // Rimuovi tutti i dispositivi esistenti
+        var user = playerInput.user;
+        user.UnpairDevices();
+
+        // Accoppia con il dispositivo specifico
+        InputUser.PerformPairingWithDevice(device, user);
+
+        // Forza lo schema di controllo
+        user.ActivateControlScheme(controlScheme);
+
+        // Configura le impostazioni
+        playerInput.neverAutoSwitchControlSchemes = true; // IMPORTANTE: impedisce il cambio automatico
+        playerInput.notificationBehavior = PlayerNotifications.InvokeCSharpEvents;
+
+        Debug.Log($"Configured PlayerInput with device: {device.name}, scheme: {controlScheme}");
     }
 }

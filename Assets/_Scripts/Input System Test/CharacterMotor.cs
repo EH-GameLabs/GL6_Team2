@@ -117,7 +117,7 @@ public class CharacterMotor : NetworkBehaviour
 {
     [Header("Character Identity")]
     [Tooltip("Imposta questo nell'inspector: CharacterA o CharacterB")]
-    [SerializeField] private CharacterID characterId;
+    public CharacterID characterId;
 
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
@@ -234,6 +234,34 @@ public class CharacterMotor : NetworkBehaviour
                 HandleMovementCandly();
                 break;
         }
+    }
+
+    private void LateUpdate()
+    {
+        if (characterId == CharacterID.CharacterA) return;
+
+        if (gameMode == GameMode.OnlineMultiplayer && !IsOwner)
+        {
+            return;
+        }
+
+        StayInsideTheCamera();
+    }
+
+    private void StayInsideTheCamera()
+    {
+        // il personaggio deve rimanere all'interno della visuale della telecamera
+        Camera mainCamera = Camera.main;
+        if (mainCamera == null) return;
+
+        Vector3 cameraPosition = mainCamera.transform.position;
+        Vector3 cameraSize = mainCamera.orthographicSize * new Vector3(mainCamera.aspect, 1, 0);
+        Vector3 clampedPosition = transform.position;
+
+        clampedPosition.x = Mathf.Clamp(clampedPosition.x, cameraPosition.x - cameraSize.x, cameraPosition.x + cameraSize.x);
+        clampedPosition.y = Mathf.Clamp(clampedPosition.y, cameraPosition.y - cameraSize.y, cameraPosition.y + cameraSize.y);
+
+        transform.position = clampedPosition;
     }
 
     void Update()
@@ -387,5 +415,18 @@ public class CharacterMotor : NetworkBehaviour
     private void SetupGroundCheck()
     {
         CreateGroundCheckIfMissing();
+    }
+
+    // se può trapassare i platform dal basso verso l'alto allora attivo il trigger del platform
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("PassablePlatform"))
+        {
+            PassablePlatform platform = other.GetComponent<PassablePlatform>();
+            if (platform != null)
+            {
+                platform.SetTrigger(true);
+            }
+        }
     }
 }

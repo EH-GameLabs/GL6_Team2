@@ -13,7 +13,15 @@ public class PauseUI : BaseUI
         {
             NetworkManager.Singleton.Shutdown();
         }
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
+
+        SceneManager.sceneLoaded += (scene, mode) =>
+        {
+            if (scene.name == "MainScene")
+            {
+                GameStateManager.Instance.CurrentGameState = GameState.MainMenu;
+            }
+        };
     }
 
     public void GoToHud()

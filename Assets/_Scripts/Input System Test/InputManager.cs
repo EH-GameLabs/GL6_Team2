@@ -141,21 +141,21 @@ public class InputManager : MonoBehaviour
         var actions = input.actions;
 
         // Debug per verificare che gli actions esistano
-        Debug.Log($"Available actions for player {playerId}: {string.Join(", ", actions.actionMaps.SelectMany(am => am.actions).Select(a => a.name))}");
+        //Debug.Log($"Available actions for player {playerId}: {string.Join(", ", actions.actionMaps.SelectMany(am => am.actions).Select(a => a.name))}");
 
         // Verifica che gli actions siano abilitati
-        Debug.Log($"Actions enabled for player {playerId}: {actions.enabled}");
+        //Debug.Log($"Actions enabled for player {playerId}: {actions.enabled}");
 
         actions["Move"].performed += ctx =>
         {
-            Debug.Log($"Player {playerId} Move performed: {ctx.ReadValue<Vector2>()}");
+            //Debug.Log($"Player {playerId} Move performed: {ctx.ReadValue<Vector2>()}");
             HandleMove(ctx, playerId);
         };
 
         actions["Move"].canceled += ctx => HandleMove(ctx, playerId);
         actions["Jump"].performed += ctx =>
         {
-            Debug.Log($"Player {playerId} Jump performed");
+            //Debug.Log($"Player {playerId} Jump performed");
             HandleJump(ctx, playerId);
         };
         actions["Jump"].canceled += ctx => HandleJump(ctx, playerId);

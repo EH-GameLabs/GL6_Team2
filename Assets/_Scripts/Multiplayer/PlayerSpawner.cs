@@ -30,6 +30,8 @@ public class PlayerSpawner : NetworkBehaviour
             pairWithDevices: new InputDevice[] { Keyboard.current, Mouse.current }
         );
 
+        newPlayer.transform.position = spawnPoint.position;
+
         //GameObject newPlayer = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
         NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
         //newPlayer.SetActive(true);

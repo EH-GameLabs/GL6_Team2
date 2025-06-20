@@ -40,12 +40,14 @@ public class GameManager : NetworkBehaviour
         switch (mode)
         {
             case GameMode.SinglePlayer:
-                GameObject g1 = Instantiate(player1Prefab, player1SpawnPoint.position, Quaternion.identity);
-                g1.name = "Player1";
-                GameObject g2 = Instantiate(player2Prefab, player2SpawnPoint.position, Quaternion.identity);
-                g2.name = "Player2";
+                GameObject p1 = Instantiate(player1Prefab, player1SpawnPoint.position, Quaternion.identity);
+                p1.name = "Player1";
+                GameObject p2 = Instantiate(player2Prefab, player2SpawnPoint.position, Quaternion.identity);
+                p2.name = "Player2";
 
-                PlayerInput playerInput = g1.GetComponent<PlayerInput>();
+                FindAnyObjectByType<CameraFollow>().SetTarget(p1.transform);
+
+                PlayerInput playerInput = p1.GetComponent<PlayerInput>();
                 playerInput.enabled = true;
 
                 InputManager.Instance.RegisterPlayer(0, CharacterID.CharacterA, playerInput);
@@ -117,6 +119,7 @@ public class GameManager : NetworkBehaviour
             player2Input.enabled = true;
         }
 
+        FindAnyObjectByType<CameraFollow>().SetTarget(p1.transform);
 
         ConfigurePlayerInput(player1Input, Gamepad.all[pad1Index], "Gamepad");
         ConfigurePlayerInput(player2Input, Gamepad.all[pad2Index], "Gamepad");
@@ -145,5 +148,10 @@ public class GameManager : NetworkBehaviour
         playerInput.notificationBehavior = PlayerNotifications.InvokeCSharpEvents;
 
         Debug.Log($"Configured PlayerInput with device: {device.name}, scheme: {controlScheme}");
+    }
+
+    internal void AddSock()
+    {
+        throw new NotImplementedException();
     }
 }

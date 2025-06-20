@@ -71,7 +71,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  player1Prefab: {fileID: 410496063018544475, guid: 43da151495a2151448a0a4f9267b22d0, type: 3}
-  player2Prefab: {fileID: 410496063018544475, guid: 220e427c60f4a4345a51ae8fd8581762, type: 3}
-  player1SpawnPoint: {fileID: 0}
-  player2SpawnPoint: {fileID: 0}

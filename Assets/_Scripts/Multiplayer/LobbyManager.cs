@@ -169,7 +169,7 @@ public class LobbyManager : NetworkBehaviour
         }
         catch (LobbyServiceException e)
         {
-            Debug.LogError("Errore nell'aggiornamento della lobby: " + e.Message);
+            //Debug.LogError("Errore nell'aggiornamento della lobby: " + e.Message);
             if (e.Reason == LobbyExceptionReason.LobbyNotFound || e.Reason == LobbyExceptionReason.Forbidden)
             {
                 CurrentLobby = null;
@@ -187,8 +187,19 @@ public class LobbyManager : NetworkBehaviour
     [ClientRpc]
     public void SerializeGameClientRpc()
     {
+        //LevelManager.Instance.StartLevelServerRpc(1); // Avvia il livello 1
         Debug.Log("Game state serialized and sent to clients.");
         GameManager.Instance.SetupGame(GameMode.OnlineMultiplayer);
+        CharacterMotor[] Characters = FindObjectsByType<CharacterMotor>(FindObjectsSortMode.None);
+        foreach (CharacterMotor character in Characters)
+        {
+            if (character.characterId == CharacterID.CharacterA)
+            {
+                FindAnyObjectByType<CameraFollow>().SetTarget(character.transform);
+                break;
+            }
+        }
+
         GameStateManager.Instance.CurrentGameState = GameState.Playing;
     }
 

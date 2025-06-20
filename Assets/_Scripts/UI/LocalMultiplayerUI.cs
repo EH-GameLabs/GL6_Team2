@@ -58,7 +58,10 @@ public class LocalMultiplayerUI : BaseUI
     public void StartGame()
     {
         GameStateManager.Instance.CurrentGameState = GameState.Loading;
+
         GameManager.Instance.SetupLocalMultiplayerGame(player1Index, player2Index);
+
+        LevelManager.Instance.LoadLevel(1);
     }
 
     public void GoBack()

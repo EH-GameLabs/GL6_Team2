@@ -32,11 +32,12 @@ public class PlayerSpawner : NetworkBehaviour
 
         newPlayer.transform.position = spawnPoint.position;
 
-        //GameObject newPlayer = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
+
         NetworkObject netObj = newPlayer.GetComponent<NetworkObject>();
         //newPlayer.SetActive(true);
         netObj.SpawnAsPlayerObject(clientId, true);
 
+        netObj.GetComponent<Rigidbody>().useGravity = false;
         Debug.Log($"Spawned player prefab for client {clientId}");
     }
 

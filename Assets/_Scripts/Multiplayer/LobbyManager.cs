@@ -187,7 +187,6 @@ public class LobbyManager : NetworkBehaviour
     [ClientRpc]
     public void SerializeGameClientRpc()
     {
-        //LevelManager.Instance.StartLevelServerRpc(1); // Avvia il livello 1
         Debug.Log("Game state serialized and sent to clients.");
         GameManager.Instance.SetupGame(GameMode.OnlineMultiplayer);
         CharacterMotor[] Characters = FindObjectsByType<CharacterMotor>(FindObjectsSortMode.None);
@@ -200,7 +199,7 @@ public class LobbyManager : NetworkBehaviour
             }
         }
 
-        GameStateManager.Instance.CurrentGameState = GameState.Playing;
+        LevelManager.Instance.StartLevelServerRpc(1); // Avvia il livello 1
     }
 
     public async void CreateLobby()

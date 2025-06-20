@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class RoomUI : BaseUI
 {
@@ -41,5 +42,11 @@ public class RoomUI : BaseUI
     {
         GameStateManager.Instance.CurrentGameState = GameState.Loading;
         LobbyManager.Instance.LeaveRoom();
+    }
+
+    public void CopyRoomCode()
+    {
+        GUIUtility.systemCopyBuffer = roomCodeText.text.Split(' ')[1];
+        Debug.Log("Room code copied to clipboard: " + roomCodeText.text.Split(' ')[1]);
     }
 }

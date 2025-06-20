@@ -52,7 +52,7 @@ public class GameManager : NetworkBehaviour
 
                 InputManager.Instance.RegisterPlayer(0, CharacterID.CharacterA, playerInput);
 
-                GameStateManager.Instance.CurrentGameState = GameState.Playing;
+                //GameStateManager.Instance.CurrentGameState = GameState.Playing;
                 break;
 
             case GameMode.LocalMultiplayer:
@@ -128,7 +128,7 @@ public class GameManager : NetworkBehaviour
         InputManager.Instance.RegisterLocalPlayer(0, CharacterID.CharacterA, player1Input);
         InputManager.Instance.RegisterLocalPlayer(1, CharacterID.CharacterB, player2Input);
 
-        GameStateManager.Instance.CurrentGameState = GameState.Playing;
+        //GameStateManager.Instance.CurrentGameState = GameState.Playing;
     }
 
     private void ConfigurePlayerInput(PlayerInput playerInput, InputDevice device, string controlScheme)

@@ -22,14 +22,17 @@ public class LevelManager : MonoBehaviour
     }
 
     // STELLA 1
-    List<ICollectibles> collectibles = new List<ICollectibles>();
+    [Header("First Star")]
     public int collectiblesCollected = 0;
+    List<ICollectibles> collectibles = new List<ICollectibles>();
 
     // STELLA 2
+    [Header("Second Star")]
     [SerializeField] float timeMaxToGetTheStar = 180f; // 3 minutes
     private float timeElapsed = 0f;
 
     // STELLA 3
+    [Header("Third Star")]
     public bool hasTakenDamage = false;
 
 
@@ -59,6 +62,16 @@ public class LevelManager : MonoBehaviour
         Debug.Log("Scene loaded: " + arg0.name);
         collectibles.AddRange(FindObjectsByType<Sock>(FindObjectsSortMode.None));
         GameStateManager.Instance.CurrentGameState = GameState.Playing;
+
+        CharacterMotor[] motors = FindObjectsByType<CharacterMotor>(FindObjectsSortMode.None);
+        foreach (CharacterMotor motor in motors)
+        {
+            if (motor.characterId == CharacterID.CharacterA)
+            {
+                motor.transform.GetComponent<Rigidbody>().useGravity = true;
+                break;
+            }
+        }
     }
 
     [ServerRpc(RequireOwnership = false)]

@@ -1,81 +1,9 @@
-﻿//using UnityEngine;
-//public class Grapple3D : MonoBehaviour
-//{
-//    public Transform anchorPoint; // punto d'aggancio sul soffitto
-//    private Rigidbody rb;
-//    private ConfigurableJoint joint;
-//    public float movemenForce = 5f;
-
-//    void Start()
-//    {
-//        rb = GetComponent<Rigidbody>();
-//    }
-
-//    public LineRenderer rope;
-
-//    void LateUpdate()
-//    {
-//        if (joint != null)
-//        {
-//            rope.enabled = true;
-//            rope.SetPosition(0, anchorPoint.position);
-//            rope.SetPosition(1, transform.position);
-//        }
-//        else { rope.enabled = false; }
-//    }
-
-//    void FixedUpdate()
-//    {
-//        if (joint != null)
-//        {
-//            float input = Input.GetAxis("Horizontal");
-//            Vector3 force = transform.right * input * movemenForce; // Puoi cambiare la forza
-//            rb.AddForce(force);
-//        }
-//    }
-
-//    void Update()
-//    {
-//        if (Input.GetKeyDown(KeyCode.E))
-//        {
-//            if (joint == null)
-//            {
-//                Attach();
-//            }
-//        }
-
-//        if (Input.GetKeyDown(KeyCode.Q))
-//        {
-//            if (joint != null)
-//            {
-//                Destroy(joint);
-//            }
-//        }
-//    }
-
-//    void Attach()
-//    {
-//        joint = gameObject.AddComponent<ConfigurableJoint>();
-//        joint.connectedAnchor = anchorPoint.position;
-//        joint.xMotion = ConfigurableJointMotion.Limited;
-//        joint.yMotion = ConfigurableJointMotion.Limited;
-//        joint.zMotion = ConfigurableJointMotion.Limited;
-
-//        SoftJointLimit limit = new SoftJointLimit();
-//        limit.limit = Vector3.Distance(transform.position, anchorPoint.position);
-//        joint.linearLimit = limit;
-
-//        joint.angularXMotion = ConfigurableJointMotion.Free;
-//        joint.angularYMotion = ConfigurableJointMotion.Free;
-//        joint.angularZMotion = ConfigurableJointMotion.Free;
-
-//        joint.enableCollision = true;
-//    }
-//}
-
+﻿using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(LineRenderer))]
 public class Grapple3D : MonoBehaviour
 {
     [SerializeField] private Transform anchorPoint;       // Punto fisso sul soffitto
@@ -84,55 +12,79 @@ public class Grapple3D : MonoBehaviour
     [SerializeField] private float minRopeLength = 2f;    // Lunghezza minima della corda
     [SerializeField] private float maxRopeLength = 20f;   // Lunghezza massima della corda
 
-    private Rigidbody rb;
-    private ConfigurableJoint joint;
+    [Header("Debug")]
+    [SerializeField][ReadOnly] private Rigidbody rb;
+    [SerializeField][ReadOnly] private ConfigurableJoint joint;
     private LineRenderer rope;
+    private PlayerInputData playerInputData;
+    [HideInInspector] public bool isGrappling = false;
+    [HideInInspector] public bool canGrapple = false;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rope = GetComponent<LineRenderer>();
+        rope.material.color = Color.white;
     }
 
     void LateUpdate()
     {
-        if (joint != null)
+        if (GameManager.Instance.gameMode == GameMode.OnlineMultiplayer)
         {
-            rope.enabled = true;
-            rope.SetPosition(0, anchorPoint.position);
-            rope.SetPosition(1, transform.position);
+            AdjustRopePositionServerRpc();
         }
-        else { rope.enabled = false; }
+        else
+        {
+            AdjustRopePosition();
+        }
     }
 
     void FixedUpdate()
     {
         if (joint != null)
         {
-            float input = Input.GetAxis("Horizontal");
+            float input = playerInputData.Move.x;
             Vector3 force = transform.right * input * pendulumForce; // puoi cambiare la forza
             rb.AddForce(force);
         }
     }
 
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (!canGrapple && !isGrappling) return;
+
+        // Ottieni gli input
+        playerInputData = InputManager.Instance.GetInputForCharacter(CharacterID.CharacterA, GameManager.Instance.gameMode);
+
+        if (playerInputData.FirePressed && !isGrappling)
         {
             if (joint == null)
+            {
                 Attach();
+                isGrappling = true;
+                Debug.Log("Grapple attached to anchor point");
+            }
         }
-
-        if (Input.GetKeyDown(KeyCode.Q))
+        else if (!playerInputData.FirePressed && isGrappling)
         {
             if (joint != null)
+            {
                 Detach();
+                isGrappling = false;
+                Debug.Log("Grapple detached from anchor point.");
+            }
         }
 
         if (joint != null)
         {
             AdjustRopeLength();
         }
+    }
+
+    public void SetAnchorPoint(Transform newAnchorPoint)
+    {
+        anchorPoint = newAnchorPoint;
     }
 
     void Attach()
@@ -165,7 +117,7 @@ public class Grapple3D : MonoBehaviour
 
     void AdjustRopeLength()
     {
-        float input = Input.GetAxis("Vertical"); // W/S o ↑/↓
+        float input = playerInputData.Move.y; // W/S o ↑/↓
 
         if (Mathf.Abs(input) > 0.01f)
         {
@@ -179,8 +131,33 @@ public class Grapple3D : MonoBehaviour
             joint.linearLimit = limit;
 
             // Applica forza verso l'anchor o lontano da esso
-            if (input > 0) { return;}
-            rb.MovePosition(transform.position + input * climbForce * 10 * Time.deltaTime * transform.up);
+            if (input > 0) { return; }
+            rb.MovePosition(transform.position + input * climbForce * Time.deltaTime * transform.up);
         }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void AdjustRopePositionServerRpc()
+    {
+        AdjustRopePositionClientRpc();
+    }
+
+    [ClientRpc]
+    private void AdjustRopePositionClientRpc()
+    {
+        AdjustRopePosition();
+    }
+
+    private void AdjustRopePosition()
+    {
+        if (joint != null)
+        {
+            rope.enabled = true;
+            rope.SetPosition(0, anchorPoint.position);
+            rope.SetPosition(1, transform.position);
+            rope.startWidth = 0.1f;
+            rope.endWidth = 0.1f;
+        }
+        else { rope.enabled = false; }
     }
 }

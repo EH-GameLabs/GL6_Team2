@@ -51,7 +51,6 @@ public class GameManager : NetworkBehaviour
                 playerInput.enabled = true;
 
                 InputManager.Instance.RegisterPlayer(0, CharacterID.CharacterA, playerInput);
-
                 //GameStateManager.Instance.CurrentGameState = GameState.Playing;
                 break;
 

@@ -10,9 +10,6 @@ public class InputManager : MonoBehaviour
 {
     public static InputManager Instance { get; private set; }
 
-    // Variabile per lo switch in single-player
-    private CharacterID activeSinglePlayerCharacter = CharacterID.CharacterA;
-
     // Dizionari per mappare i giocatori agli input e ai personaggi
     private Dictionary<int, PlayerInput> playerInputs = new Dictionary<int, PlayerInput>();
     private Dictionary<int, CharacterID> playerCharacterMap = new Dictionary<int, CharacterID>();
@@ -109,12 +106,7 @@ public class InputManager : MonoBehaviour
         switch (currentGameMode)
         {
             case GameMode.SinglePlayer:
-                // Se il personaggio che chiede input è quello attivo, ritorna l'input del giocatore 0.
-                if (characterId == activeSinglePlayerCharacter)
-                {
-                    return playerInputData.TryGetValue(0, out var data) ? data : new PlayerInputData();
-                }
-                break;
+                return playerInputData.TryGetValue(0, out var data) ? data : new PlayerInputData();
 
             case GameMode.LocalMultiplayer:
             case GameMode.OnlineMultiplayer:
@@ -124,7 +116,7 @@ public class InputManager : MonoBehaviour
                     if (entry.Value == characterId)
                     {
                         // Ritorna i dati di input di quel giocatore
-                        return playerInputData.TryGetValue(entry.Key, out var data) ? data : new PlayerInputData();
+                        return playerInputData.TryGetValue(entry.Key, out var dataa) ? dataa : new PlayerInputData();
                     }
                 }
                 break;
@@ -163,7 +155,23 @@ public class InputManager : MonoBehaviour
         // ... altri actions
         actions["Interact"].performed += ctx => HandleInteract(ctx, playerId);
         actions["Interact"].canceled += ctx => HandleInteract(ctx, playerId);
-        actions["SwitchCharacter"].performed += ctx => HandleSwitchCharacter(playerId);
+
+        if (GameManager.Instance.gameMode != GameMode.SinglePlayer) return;
+        actions["Look"].performed += ctx =>
+        {
+            //Debug.Log($"Player {playerId} Look performed: {ctx.ReadValue<Vector2>()}");
+            var data = playerInputData[playerId];
+            data.Look = ctx.ReadValue<Vector2>();
+            playerInputData[playerId] = data;
+        };
+        actions["Look"].canceled += ctx =>
+        {
+            //Debug.Log($"Player {playerId} Look canceled");
+            var data = playerInputData[playerId];
+            data.Look = Vector2.zero; // Reset look when canceled
+            playerInputData[playerId] = data;
+        };
+        //actions["SwitchCharacter"].performed += ctx => HandleSwitchCharacter(playerId);
     }
 
     // Esempio per Unsubscribe (meno critico se gli oggetti vengono distrutti correttamente)
@@ -188,19 +196,26 @@ public class InputManager : MonoBehaviour
     private void HandleInteract(InputAction.CallbackContext context, int playerId)
     {
         var data = playerInputData[playerId];
-        data.FirePressed = context.ReadValueAsButton();
+
+        // Rileva solo quando il pulsante viene premuto (non tenuto premuto)
+        if (context.performed) // Questo si attiva solo una volta quando premi
+        {
+            data.FirePressed = !data.FirePressed;
+            Debug.Log($"Interact pressed: {data.FirePressed}");
+        }
+
         playerInputData[playerId] = data;
     }
 
-    private void HandleSwitchCharacter(int playerId)
-    {
-        // Lo switch ha senso solo in single player e per il giocatore 0
-        if (GameManager.Instance.gameMode == GameMode.SinglePlayer && playerId == 0)
-        {
-            activeSinglePlayerCharacter = (activeSinglePlayerCharacter == CharacterID.CharacterA)
-                ? CharacterID.CharacterB
-                : CharacterID.CharacterA;
-            Debug.Log($"Active character switched to: {activeSinglePlayerCharacter}");
-        }
-    }
+    //private void HandleSwitchCharacter(int playerId)
+    //{
+    //    // Lo switch ha senso solo in single player e per il giocatore 0
+    //    if (GameManager.Instance.gameMode == GameMode.SinglePlayer && playerId == 0)
+    //    {
+    //        activeSinglePlayerCharacter = (activeSinglePlayerCharacter == CharacterID.CharacterA)
+    //            ? CharacterID.CharacterB
+    //            : CharacterID.CharacterA;
+    //        Debug.Log($"Active character switched to: {activeSinglePlayerCharacter}");
+    //    }
+    //}
 }

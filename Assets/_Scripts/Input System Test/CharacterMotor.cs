@@ -136,6 +136,7 @@ public class CharacterMotor : NetworkBehaviour
 
     private Rigidbody rb;
     private SpriteRenderer spriteRenderer;
+    private Grapple3D grapple3D;
 
     public override void OnNetworkSpawn()
     {
@@ -174,6 +175,8 @@ public class CharacterMotor : NetworkBehaviour
         SetupRigidbody();
 
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        grapple3D = GetComponent<Grapple3D>();
 
         if (gameMode == GameMode.OnlineMultiplayer && !IsOwner)
         {
@@ -214,7 +217,7 @@ public class CharacterMotor : NetworkBehaviour
 
         if (rb == null) return;
 
-        // Controlla se � a terra (solo per CharacterA)
+        // Controlla se è a terra (solo per CharacterA)
         if (characterId == CharacterID.CharacterA)
         {
             CheckGrounded();
@@ -228,9 +231,12 @@ public class CharacterMotor : NetworkBehaviour
         switch (characterId)
         {
             case CharacterID.CharacterA:
+                if (grapple3D.isGrappling) return;
                 HandleMovementSpidy();
                 break;
+
             case CharacterID.CharacterB:
+                if (gameMode == GameMode.SinglePlayer) return;
                 HandleMovementCandly();
                 break;
         }
@@ -243,6 +249,11 @@ public class CharacterMotor : NetworkBehaviour
         if (gameMode == GameMode.OnlineMultiplayer && !IsOwner)
         {
             return;
+        }
+
+        if (gameMode == GameMode.SinglePlayer)
+        {
+            HandleMovementCandly();
         }
 
         StayInsideTheCamera();
@@ -297,32 +308,37 @@ public class CharacterMotor : NetworkBehaviour
 
     private void HandleMovementCandly()
     {
-        // CharacterB si muove liberamente in 2D (senza gravita)
+        if (GameManager.Instance.gameMode == GameMode.SinglePlayer)
+        {
+            CandlyMovement(currentInput.Look);
+            return;
+        }
+
+        CandlyMovement(currentInput.Move);
+    }
+
+    private void CandlyMovement(Vector2 input)
+    {
+        if (GameManager.Instance.gameMode == GameMode.SinglePlayer)
+        {
+            Vector3 screenPoint = new Vector3(input.x, input.y, Camera.main.nearClipPlane);
+            Vector3 world3d = Camera.main.ScreenToWorldPoint(screenPoint);
+            Vector2 target = world3d;
+
+            Vector2 current = rb.position;
+            Vector2 newPos = Vector2.MoveTowards(current, target, moveSpeed * Time.fixedDeltaTime);
+            rb.MovePosition(newPos);
+            FlipCharacter(newPos.x - current.x);
+            return;
+        }
+
+
+        // Modalità multiplayer (il tuo codice preesistente)
         Vector3 targetVelocity = Vector3.zero;
-
-        // Movimento orizzontale
-        if (Mathf.Abs(currentInput.Move.x) > 0.1f)
-        {
-            targetVelocity.x = currentInput.Move.x * moveSpeed;
-            FlipCharacter(currentInput.Move.x);
-        }
-
-        // Movimento verticale
-        if (Mathf.Abs(currentInput.Move.y) > 0.1f)
-        {
-            targetVelocity.y = currentInput.Move.y * moveSpeed;
-        }
-
-        // Applica la velocità target
-        if (targetVelocity != Vector3.zero)
-        {
-            rb.linearVelocity = targetVelocity;
-        }
-        else
-        {
-            // Ferma gradualmente il movimento quando non ci sono input
-            rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, Vector3.zero, Time.fixedDeltaTime * 8f);
-        }
+        if (Mathf.Abs(input.x) > 0.1f) { targetVelocity.x = input.x * moveSpeed; FlipCharacter(input.x); }
+        if (Mathf.Abs(input.y) > 0.1f) { targetVelocity.y = input.y * moveSpeed; }
+        if (targetVelocity != Vector3.zero) rb.linearVelocity = targetVelocity;
+        else rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, Vector3.zero, Time.fixedDeltaTime * 8f);
     }
 
     private void FlipCharacter(float horizontalInput)
@@ -364,26 +380,18 @@ public class CharacterMotor : NetworkBehaviour
 
     private void HandleActions()
     {
-        // Salto (solo per CharacterA quando � a terra)
+        // Salto (solo per CharacterA quando è a terra)
         if (currentInput.JumpPressed)
         {
             currentInput.JumpPressed = false;
             if (characterId == CharacterID.CharacterA && isGrounded)
             {
                 rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, 0);
-                Debug.Log($"{characterId} is Jumping!");
             }
             else if (characterId == CharacterID.CharacterB)
             {
-                // CharacterB potrebbe avere un'abilit� speciale invece del salto
-                Debug.Log($"{characterId} special ability activated!");
-            }
-        }
 
-        if (currentInput.FirePressed)
-        {
-            Debug.Log($"{characterId} is Firing!");
-            // Aggiungi qui la tua logica di sparo
+            }
         }
     }
 
@@ -418,15 +426,15 @@ public class CharacterMotor : NetworkBehaviour
     }
 
     // se può trapassare i platform dal basso verso l'alto allora attivo il trigger del platform
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("PassablePlatform"))
-        {
-            PassablePlatform platform = other.GetComponent<PassablePlatform>();
-            if (platform != null)
-            {
-                platform.SetTrigger(true);
-            }
-        }
-    }
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    if (other.CompareTag("PassablePlatform"))
+    //    {
+    //        PassablePlatform platform = other.GetComponent<PassablePlatform>();
+    //        if (platform != null)
+    //        {
+    //            platform.SetTrigger(true);
+    //        }
+    //    }
+    //}
 }

@@ -77,7 +77,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 410496063018544475}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf5cd658c6f82fb45b614267a9f28ca5, type: 3}
+  m_Script: {fileID: 11500000, guid: da03f43c561d6704c8d697546065b020, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
@@ -86,7 +86,7 @@ MonoBehaviour:
   jumpForce: 12
   gravityScale: 2
   groundCheck: {fileID: 7566565178634795166}
-  groundCheckRadius: 0.15
+  groundCheckRadius: 0.2
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 256
@@ -278,7 +278,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 1.5
+  m_Radius: 1.25
   m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!120 &2032218730242638082
 LineRenderer:

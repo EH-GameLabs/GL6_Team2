@@ -9,6 +9,12 @@ public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    [Header("Game Settings")]
+    public int spidyMaxLife = 3;
+    [ReadOnly] public int spidyLife = 3;
+    public int candlyMaxLife = 1;
+    [ReadOnly] public int candlyLife = 1;
+
     [Header("GameObjects Prefabs")]
     public GameObject player1Prefab;
     public GameObject player2Prefab;
@@ -62,6 +68,9 @@ public class GameManager : NetworkBehaviour
 
                 break;
         }
+
+        spidyLife = spidyMaxLife;
+        candlyLife = candlyMaxLife;
     }
 
     private void AddNetworkComponents(GameObject tmp)
@@ -152,5 +161,35 @@ public class GameManager : NetworkBehaviour
     internal void AddSock()
     {
         throw new NotImplementedException();
+    }
+
+    public void LoseLife(CharacterID characterID)
+    {
+        switch (characterID)
+        {
+            case CharacterID.CharacterA:
+                spidyLife--;
+                LevelManager.Instance.hasTakenDamage = true;
+                if (spidyLife <= 0)
+                {
+                    Debug.Log("Spidy has lost all lives!");
+
+                    GameStateManager.Instance.CurrentGameState = GameState.Lose;
+                }
+                break;
+            case CharacterID.CharacterB:
+                candlyLife--;
+                if (candlyLife <= 0)
+                {
+                    Debug.Log("Candly has lost all lives!");
+                    // Gestisci la morte di Candly
+
+                    GameStateManager.Instance.CurrentGameState = GameState.Lose;
+                }
+                break;
+            default:
+                Debug.LogWarning("Unknown character ID: " + characterID);
+                break;
+        }
     }
 }

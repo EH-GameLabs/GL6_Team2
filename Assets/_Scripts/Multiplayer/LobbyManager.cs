@@ -189,8 +189,8 @@ public class LobbyManager : NetworkBehaviour
     {
         Debug.Log("Game state serialized and sent to clients.");
         GameManager.Instance.SetupGame(GameMode.OnlineMultiplayer);
-        CharacterMotor[] Characters = FindObjectsByType<CharacterMotor>(FindObjectsSortMode.None);
-        foreach (CharacterMotor character in Characters)
+        PlayerController[] Characters = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+        foreach (PlayerController character in Characters)
         {
             if (character.characterId == CharacterID.CharacterA)
             {

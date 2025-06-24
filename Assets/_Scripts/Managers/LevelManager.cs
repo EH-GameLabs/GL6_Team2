@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -23,8 +24,8 @@ public class LevelManager : MonoBehaviour
 
     // STELLA 1
     [Header("First Star")]
-    public int collectiblesCollected = 0;
-    List<ICollectibles> collectibles = new List<ICollectibles>();
+    public int candiesCollected = 0;
+    List<ICollectibles> candies = new List<ICollectibles>();
 
     // STELLA 2
     [Header("Second Star")]
@@ -60,17 +61,30 @@ public class LevelManager : MonoBehaviour
     private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
     {
         Debug.Log("Scene loaded: " + arg0.name);
-        collectibles.AddRange(FindObjectsByType<Sock>(FindObjectsSortMode.None));
+        candies.AddRange(FindObjectsByType<Candy>(FindObjectsSortMode.None));
         GameStateManager.Instance.CurrentGameState = GameState.Playing;
 
-        CharacterMotor[] motors = FindObjectsByType<CharacterMotor>(FindObjectsSortMode.None);
-        foreach (CharacterMotor motor in motors)
+        PlayerController[] motors = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+        foreach (PlayerController motor in motors)
         {
             if (motor.characterId == CharacterID.CharacterA)
             {
                 motor.transform.GetComponent<Rigidbody>().useGravity = true;
                 break;
             }
+        }
+
+        // start timer
+        timeElapsed = 0f;
+        StartCoroutine(TimerCoroutine());
+    }
+
+    private IEnumerator TimerCoroutine()
+    {
+        while (GameStateManager.Instance.CurrentGameState == GameState.Playing)
+        {
+            timeElapsed += 1f; // Aggiornare anche UI
+            yield return new WaitForSeconds(1f);
         }
     }
 
@@ -85,18 +99,29 @@ public class LevelManager : MonoBehaviour
     private void NotifyCollectibleCollectedClientRpc()
     {
         // Notifica tutti i client che un oggetto è stato raccolto
-        AddSock();
+        AddCandy();
     }
 
-    public void AddSock()
+    public void AddCandy()
     {
-        collectiblesCollected++;
-        Debug.Log($"Sock collected! Total: {collectiblesCollected}/{collectibles.Count}");
+        candiesCollected++;
+        Debug.Log($"Candy collected! Total: {candiesCollected}/{candies.Count}");
     }
 
-    public bool AreAllCollectiblesCollected()
+    public bool AreAllCandyCollected()
     {
         // Controlla se tutti gli oggetti sono stati raccolti
-        return collectibles.Count == collectiblesCollected;
+        return candies.Count == candiesCollected;
+    }
+
+    internal void EndLevel()
+    {
+        StopAllCoroutines();
+        GameStateManager.Instance.CurrentGameState = GameState.Win;
+
+        FindAnyObjectByType<WinUI>().SetWinStats(
+            AreAllCandyCollected(),
+            timeElapsed <= timeMaxToGetTheStar,
+            !hasTakenDamage);
     }
 }

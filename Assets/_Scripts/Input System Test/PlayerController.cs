@@ -1,119 +1,10 @@
-#region OLD
-//using System;
-//using Unity.Netcode;
-//using UnityEngine;
-//using UnityEngine.InputSystem;
-//using UnityEngine.Windows;
-
-//public class CharacterMotor : NetworkBehaviour
-//{
-//    [Header("Character Identity")]
-//    [Tooltip("Imposta questo nell'inspector: CharacterA o CharacterB")]
-//    [SerializeField] private CharacterID characterId;
-
-//    [Header("Movement Settings")]
-//    [SerializeField] private float moveSpeed = 5f;
-
-//    [SerializeField][ReadOnly] private PlayerInputData currentInput;
-//    [SerializeField][ReadOnly] private GameMode gameMode;
-
-//    public override void OnNetworkSpawn()
-//    {
-//        // Esegui solo sul proprietario di questo oggetto
-//        if (!IsOwner) return;
-
-//        PlayerInput input = GetComponent<PlayerInput>();
-//        input.enabled = true;
-//        //input.actions = inputActions;
-
-//        // Determina quale personaggio controllare in base all'ID del client.
-//        // L'Host (ClientId 0) controlla A, il primo client che si unisce (ClientId 1) controlla B.
-//        // Questa logica pu� essere resa pi� complessa (es. scelta nel lobby).
-//        CharacterID controlledCharacter = (OwnerClientId == 0) ? CharacterID.CharacterA : CharacterID.CharacterB;
-
-//        // Registra questo giocatore online con l'InputManager
-//        InputManager.Instance.RegisterLocalPlayer((int)OwnerClientId, controlledCharacter, input);
-//    }
-
-//    public override void OnNetworkDespawn()
-//    {
-//        if (!IsOwner) return;
-
-//        InputManager.Instance.UnregisterPlayer((int)OwnerClientId);
-//    }
-
-//    private void Start()
-//    {
-//        gameMode = GameManager.Instance.gameMode;
-
-//        if (gameMode == GameMode.OnlineMultiplayer && !IsOwner)
-//        {
-//            return;
-//        }
-//    }
-
-//    void Update()
-//    {
-//        if (gameMode == GameMode.OnlineMultiplayer && !IsOwner)
-//        {
-//            return;
-//        }
-
-//        // Chiede costantemente all'InputManager i suoi input
-//        currentInput = InputManager.Instance.GetInputForCharacter(characterId, gameMode);
-
-//        // Applica gli input
-//        switch (characterId)
-//        {
-//            case CharacterID.CharacterA:
-//                HandleMovementSpidy();
-//                break;
-//            case CharacterID.CharacterB:
-//                HandleMovementCandly();
-//                break;
-//        }
-
-//        HandleActions();
-//    }
-
-//    private void HandleMovementSpidy()
-//    {
-//        if (currentInput.Move != Vector2.zero)
-//        {
-//            Vector3 movement = new Vector3(currentInput.Move.x, 0, 0);
-//            transform.Translate(movement * moveSpeed * Time.deltaTime);
-//        }
-//    }
-
-//    private void HandleMovementCandly()
-//    {
-//        throw new NotImplementedException();
-//    }
-
-//    private void HandleActions()
-//    {
-//        if (currentInput.JumpPressed)
-//        {
-//            Debug.Log($"{characterId} is Jumping!");
-//            // Aggiungi qui la tua logica di salto
-//        }
-//        if (currentInput.FirePressed)
-//        {
-//            Debug.Log($"{characterId} is Firing!");
-//            // Aggiungi qui la tua logica di sparo
-//        }
-//    }
-//}
-#endregion
-
-// NEW
 using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Windows;
 
-public class CharacterMotor : NetworkBehaviour
+public class PlayerController : NetworkBehaviour
 {
     [Header("Character Identity")]
     [Tooltip("Imposta questo nell'inspector: CharacterA o CharacterB")]
@@ -222,6 +113,8 @@ public class CharacterMotor : NetworkBehaviour
         {
             CheckGrounded();
             ApplyCustomGravity();
+            CheckPassablePlatform();
+            CheckOutOfTheMap();
         }
 
         // Ottieni gli input
@@ -378,6 +271,55 @@ public class CharacterMotor : NetworkBehaviour
         }
     }
 
+    private void CheckPassablePlatform()
+    {
+        // Controlla se il personaggio sta attraversando una piattaforma passabile
+        if (rb.linearVelocity.y > 0)
+        {
+            Debug.Log($"Character {characterId} is moving up, checking for passable platforms.");
+
+            // Versione migliorata con distanza limitata e controllo distanza minima
+            float rayDistance = 2f; // Limita la distanza del raycast
+            if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hit, rayDistance))
+            {
+                // Verifica che non sia troppo vicino (evita falsi positivi)
+                if (hit.distance > 0.1f)
+                {
+                    // CORREZIONE: usa hit.collider invece di transform
+                    if (hit.collider.TryGetComponent<PassablePlatform>(out PassablePlatform passablePlatform))
+                    {
+                        Debug.Log($"Character {characterId} is passing through a passable platform: {hit.collider.name}");
+                        passablePlatform.SetTrigger(true);
+                    }
+                }
+            }
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hitDown, rayDistance))
+            {
+                // Verifica che non sia troppo vicino (evita falsi positivi)
+                if (hitDown.distance > 0.2f)
+                {
+                    // CORREZIONE: usa hitDown.collider invece di transform
+                    if (hitDown.collider.TryGetComponent<PassablePlatform>(out PassablePlatform passablePlatformDown))
+                    {
+                        Debug.Log($"Character {characterId} is passing through a passable platform: {hitDown.collider.name}");
+                        passablePlatformDown.SetTrigger(false);
+                    }
+                }
+            }
+        }
+    }
+
+    private void CheckOutOfTheMap()
+    {
+        if (transform.position.y < -10f)
+        {
+            Debug.LogWarning($"Character {characterId} is out of the map! Resetting position.");
+            transform.position = GameManager.Instance.player1SpawnPoint.position;
+
+            GameManager.Instance.LoseLife(characterId);
+        }
+    }
+
     private void HandleActions()
     {
         // Salto (solo per CharacterA quando è a terra)
@@ -424,17 +366,4 @@ public class CharacterMotor : NetworkBehaviour
     {
         CreateGroundCheckIfMissing();
     }
-
-    // se può trapassare i platform dal basso verso l'alto allora attivo il trigger del platform
-    //private void OnTriggerEnter(Collider other)
-    //{
-    //    if (other.CompareTag("PassablePlatform"))
-    //    {
-    //        PassablePlatform platform = other.GetComponent<PassablePlatform>();
-    //        if (platform != null)
-    //        {
-    //            platform.SetTrigger(true);
-    //        }
-    //    }
-    //}
 }

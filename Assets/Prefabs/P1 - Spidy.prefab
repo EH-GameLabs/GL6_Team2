@@ -83,7 +83,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   characterId: 0
   moveSpeed: 5
-  jumpForce: 12
+  jumpForce: 8
   gravityScale: 2
   groundCheck: {fileID: 7566565178634795166}
   groundCheckRadius: 0.2
@@ -112,8 +112,8 @@ MonoBehaviour:
   anchorPoint: {fileID: 0}
   climbForce: 2
   pendulumForce: 5
-  minRopeLength: 0.5
-  maxRopeLength: 3
+  minRopeLength: 1
+  maxRopeLength: 2
   rb: {fileID: 0}
   joint: {fileID: 0}
   isGrappling: 0

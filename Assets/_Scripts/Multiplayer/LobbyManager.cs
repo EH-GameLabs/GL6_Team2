@@ -199,7 +199,7 @@ public class LobbyManager : NetworkBehaviour
             }
         }
 
-        LevelManager.Instance.StartLevelServerRpc(1); // Avvia il livello 1
+        LevelManager.Instance.StartLevelServerRpc(LevelManager.Instance.Level1); // Avvia il livello 1
     }
 
     public async void CreateLobby()

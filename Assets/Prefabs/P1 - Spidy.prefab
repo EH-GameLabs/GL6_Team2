@@ -16,9 +16,9 @@ GameObject:
   - component: {fileID: 1824380678118416576}
   - component: {fileID: -5229304153898955835}
   - component: {fileID: 589842493377670820}
-  - component: {fileID: 9020940145042500109}
   - component: {fileID: 2862709134064157563}
   - component: {fileID: 2032218730242638082}
+  - component: {fileID: 8457660255405593436}
   m_Layer: 6
   m_Name: P1 - Spidy
   m_TagString: Player
@@ -238,27 +238,6 @@ MonoBehaviour:
   UseRigidBodyForMotion: 1
   AutoUpdateKinematicState: 0
   AutoSetKinematicOnDespawn: 0
---- !u!65 &9020940145042500109
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 410496063018544475}
-  m_Material: {fileID: 13400000, guid: 8ad2e5e0ec205f5459cdb03e5b298ad4, type: 2}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 0.3}
-  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!135 &2862709134064157563
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -387,6 +366,29 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!136 &8457660255405593436
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410496063018544475}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &3512963392703168585
 GameObject:
   m_ObjectHideFlags: 0

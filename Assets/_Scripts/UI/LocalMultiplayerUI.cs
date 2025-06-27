@@ -61,7 +61,7 @@ public class LocalMultiplayerUI : BaseUI
 
         GameManager.Instance.SetupLocalMultiplayerGame(player1Index, player2Index);
 
-        LevelManager.Instance.LoadLevel(1);
+        LevelManager.Instance.LoadLevel(LevelManager.Instance.Level1);
     }
 
     public void GoBack()

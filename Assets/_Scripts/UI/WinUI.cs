@@ -8,7 +8,7 @@ public class WinUI : BaseUI
 {
     public void GoToMainMenu()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(LevelManager.Instance.mainScene, LoadSceneMode.Single);
     }
 
     internal void SetWinStats(bool allCandiesCollected, bool lowTime, bool hasTakenDamage)

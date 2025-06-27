@@ -36,31 +36,43 @@ public class LevelManager : MonoBehaviour
     [Header("Third Star")]
     public bool hasTakenDamage = false;
 
+    [Header("Scene Settings")]
+    public string mainScene;
+    public string Level1;
+    public string Level2;
+
 
     [ServerRpc(RequireOwnership = false)]
-    public void StartLevelServerRpc(int level)
+    public void StartLevelServerRpc(string scene)
     {
         // Avvia il livello sul server
-        StartLevelClientRpc(level);
+        StartLevelClientRpc(scene);
     }
 
     [ClientRpc]
-    private void StartLevelClientRpc(int level)
+    private void StartLevelClientRpc(string scene)
     {
         // Avvia il livello su tutti i client
-        LoadLevel(level);
+        LoadLevel(scene);
     }
 
-    public void LoadLevel(int level)
+    public void LoadLevel(string scene)
     {
         // carica il livello
-        SceneManager.LoadScene("Level" + level, LoadSceneMode.Additive);
+        SceneManager.LoadScene(scene, LoadSceneMode.Additive);
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
     {
         Debug.Log("Scene loaded: " + arg0.name);
+
+        if (arg0.name == mainScene)
+        {
+            GameStateManager.Instance.CurrentGameState = GameState.MainMenu;
+            return;
+        }
+
         candies.AddRange(FindObjectsByType<Candy>(FindObjectsSortMode.None));
         GameStateManager.Instance.CurrentGameState = GameState.Playing;
 
@@ -105,7 +117,7 @@ public class LevelManager : MonoBehaviour
     public void AddCandy()
     {
         candiesCollected++;
-        Debug.Log($"Candy collected! Total: {candiesCollected}/{candies.Count}");
+        //Debug.Log($"Candy collected! Total: {candiesCollected}/{candies.Count}");
     }
 
     public bool AreAllCandyCollected()

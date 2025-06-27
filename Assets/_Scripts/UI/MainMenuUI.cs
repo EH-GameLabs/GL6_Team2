@@ -24,7 +24,9 @@ public class MainMenuUI : BaseUI
         GameManager.Instance.gameMode = GameMode.SinglePlayer;
         GameStateManager.Instance.CurrentGameState = GameState.Loading;
         GameManager.Instance.SetupGame(GameMode.SinglePlayer);
-        LevelManager.Instance.LoadLevel(1);
+
+        // DEBUG
+        LevelManager.Instance.LoadLevel(LevelManager.Instance.Level1);
     }
 
     public void StartLocalMultiplayer()

@@ -276,7 +276,7 @@ public class PlayerController : NetworkBehaviour
         // Controlla se il personaggio sta attraversando una piattaforma passabile
         if (rb.linearVelocity.y > 0)
         {
-            Debug.Log($"Character {characterId} is moving up, checking for passable platforms.");
+            //Debug.Log($"Character {characterId} is moving up, checking for passable platforms.");
 
             // Versione migliorata con distanza limitata e controllo distanza minima
             float rayDistance = 2f; // Limita la distanza del raycast
@@ -288,7 +288,7 @@ public class PlayerController : NetworkBehaviour
                     // CORREZIONE: usa hit.collider invece di transform
                     if (hit.collider.TryGetComponent<PassablePlatform>(out PassablePlatform passablePlatform))
                     {
-                        Debug.Log($"Character {characterId} is passing through a passable platform: {hit.collider.name}");
+                        //Debug.Log($"Character {characterId} is passing through a passable platform: {hit.collider.name}");
                         passablePlatform.SetTrigger(true);
                     }
                 }
@@ -301,7 +301,7 @@ public class PlayerController : NetworkBehaviour
                     // CORREZIONE: usa hitDown.collider invece di transform
                     if (hitDown.collider.TryGetComponent<PassablePlatform>(out PassablePlatform passablePlatformDown))
                     {
-                        Debug.Log($"Character {characterId} is passing through a passable platform: {hitDown.collider.name}");
+                        //Debug.Log($"Character {characterId} is passing through a passable platform: {hitDown.collider.name}");
                         passablePlatformDown.SetTrigger(false);
                     }
                 }

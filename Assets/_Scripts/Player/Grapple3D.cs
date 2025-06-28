@@ -102,6 +102,7 @@ public class Grapple3D : MonoBehaviour
         SoftJointLimit limit = new SoftJointLimit();
         float initialDistance = Vector3.Distance(transform.position, anchorPoint.position);
         limit.limit = Mathf.Clamp(initialDistance, minRopeLength, maxRopeLength);
+        limit.contactDistance = limit.limit / 10;
         joint.linearLimit = limit;
 
         joint.angularXMotion = ConfigurableJointMotion.Free;
@@ -129,11 +130,9 @@ public class Grapple3D : MonoBehaviour
             // Applica nuovo limite
             SoftJointLimit limit = joint.linearLimit;
             limit.limit = newLimit;
+            limit.contactDistance = limit.limit / 10;
             joint.linearLimit = limit;
 
-            // Applica forza verso l'anchor o lontano da esso
-            if (input > 0) { return; }
-            rb.MovePosition(transform.position + input * climbForce * Time.deltaTime * transform.up);
         }
     }
 

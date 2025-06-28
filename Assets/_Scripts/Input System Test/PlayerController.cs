@@ -111,10 +111,11 @@ public class PlayerController : NetworkBehaviour
         // Controlla se è a terra (solo per CharacterA)
         if (characterId == CharacterID.CharacterA)
         {
+            if (grapple3D.isGrappling) return;
             CheckGrounded();
             ApplyCustomGravity();
-            CheckPassablePlatform();
             CheckOutOfTheMap();
+            CheckPassablePlatform();
         }
 
         // Ottieni gli input
@@ -195,7 +196,7 @@ public class PlayerController : NetworkBehaviour
         else
         {
             // Ferma il movimento orizzontale mantenendo la velocita verticale
-            rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+            if (isGrounded) rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
         }
     }
 

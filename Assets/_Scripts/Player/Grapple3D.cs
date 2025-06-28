@@ -92,6 +92,7 @@ public class Grapple3D : MonoBehaviour
         joint = gameObject.AddComponent<ConfigurableJoint>();
         joint.autoConfigureConnectedAnchor = false;
         joint.connectedAnchor = anchorPoint.position;
+        joint.anchor = Vector3.zero;
 
         // Blocca il movimento oltre una certa distanza
         joint.xMotion = ConfigurableJointMotion.Limited;

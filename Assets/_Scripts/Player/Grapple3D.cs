@@ -19,6 +19,7 @@ public class Grapple3D : MonoBehaviour
     private PlayerInputData playerInputData;
     [HideInInspector] public bool isGrappling = false;
     [HideInInspector] public bool canGrapple = false;
+    bool adjustingRope = false;
 
     void Start()
     {
@@ -39,40 +40,19 @@ public class Grapple3D : MonoBehaviour
         }
     }
 
-    /*void FixedUpdate()
-    {
-        if (joint == null) return;
-
-        // Direzione dal centro (ancora) al personaggio
-        Vector3 dirFromAnchor = rb.position - anchorPoint.position;
-        Vector3 radialDir = dirFromAnchor.normalized;
-
-        // Tangente al cerchio nel piano XZ (pendolo 2D su piano verticale)
-        Vector3 tangent = Vector3.Cross(radialDir, Vector3.forward).normalized;
-
-        // Input dell'utente (sinistra/destra)
-        float input = playerInputData.Move.x;
-
-        // Proietta la forza lungo la tangente alla traiettoria circolare
-        Vector3 force = -input * pendulumForce * tangent;
-
-        // Applica solo la componente tangente della forza
-        rb.AddForce(force, ForceMode.Force);
-
-        // [opzionale ma consigliato] forzare sempre il corpo a rimanere esattamente a distanza = corda
-        float desiredDistance = joint.linearLimit.limit;
-        float currentDistance = dirFromAnchor.magnitude;
-
-        if (Mathf.Abs(currentDistance - desiredDistance) > 0.01f)
+   /* void FixedUpdate()
+   {
+        if (joint != null)
         {
-            // Sposta sulla circonferenza
-            Vector3 correctedPos = anchorPoint.position + radialDir * desiredDistance;
-            rb.MovePosition(correctedPos);
-        }
+            float input = Input.GetAxis("Horizontal");
+            Vector3 force = transform.right * input * pendulumForce; // Puoi cambiare la forza
+            rb.AddForce(force);
+       }
     }*/
     void FixedUpdate()
     {
         if (joint == null) return;
+        if (adjustingRope) return;
 
         Vector3 dirFromAnchor = rb.position - anchorPoint.position;
         Vector3 radialDir = dirFromAnchor.normalized;
@@ -85,7 +65,6 @@ public class Grapple3D : MonoBehaviour
 
         rb.AddForce(force, ForceMode.Force);
 
-        // ✅ Elimina velocità radiale (quella che "entra o esce" dalla circonferenza)
         Vector3 velocity = rb.linearVelocity;
         float radialSpeed = Vector3.Dot(velocity, radialDir);
         Vector3 radialVelocity = radialDir * radialSpeed;
@@ -167,6 +146,7 @@ public class Grapple3D : MonoBehaviour
 
         if (Mathf.Abs(input) > 0.01f)
         {
+            adjustingRope = true;
             float currentLimit = joint.linearLimit.limit;
             float newLimit = currentLimit - input * climbForce * Time.deltaTime;
             newLimit = Mathf.Clamp(newLimit, minRopeLength, maxRopeLength);
@@ -176,8 +156,8 @@ public class Grapple3D : MonoBehaviour
             limit.limit = newLimit;
             limit.contactDistance = limit.limit / 10;
             joint.linearLimit = limit;
-
         }
+        else { adjustingRope = false; }
     }
 
     [ServerRpc(RequireOwnership = false)]

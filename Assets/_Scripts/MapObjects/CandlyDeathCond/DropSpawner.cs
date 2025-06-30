@@ -24,6 +24,8 @@ public class DropSpawner : MonoBehaviour
         // sono server, quindi inizio a spawnare le gocce d'acqua
         while (true)
         {
+            yield return new WaitForSeconds(spawnInterval);
+
             // Se il gioco è in modalità online multiplayer, chiama il metodo ClientRpc per spawnare la goccia
             if (gameMode == GameMode.OnlineMultiplayer)
             {
@@ -34,9 +36,6 @@ public class DropSpawner : MonoBehaviour
                 // Se il gioco è in modalità offline, spawn direttamente la goccia
                 SpawnDrop();
             }
-
-            // Attende l'intervallo di spawn prima di spawnare la prossima goccia
-            yield return new WaitForSeconds(spawnInterval);
         }
     }
 

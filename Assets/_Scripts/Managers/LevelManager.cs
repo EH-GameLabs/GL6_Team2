@@ -75,6 +75,7 @@ public class LevelManager : MonoBehaviour
 
         candies.AddRange(FindObjectsByType<Candy>(FindObjectsSortMode.None));
         GameStateManager.Instance.CurrentGameState = GameState.Playing;
+        GameManager.Instance.IsGamePaused = false;
 
         PlayerController[] motors = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
         foreach (PlayerController motor in motors)

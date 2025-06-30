@@ -23,11 +23,23 @@ public class GameManager : NetworkBehaviour
 
     [Header("Configuration")]
     [ReadOnly] public GameMode gameMode;
-    //[SerializeField] private GameObject playerControllerPrefab; // Prefab con solo PlayerInput
 
-    //[Header("Character Prefabs")]
-    //[SerializeField] private GameObject characterAPrefab;
-    //[SerializeField] private GameObject characterBPrefab;
+    public bool IsGamePaused
+    {
+        get => IsGamePaused;
+        set
+        {
+            if (value)
+            {
+                Time.timeScale = 0f; // Ferma il tempo
+            }
+            else
+            {
+                Time.timeScale = 1f; // Riprende il tempo
+            }
+            IsGamePaused = value;
+        }
+    }
 
     private void Awake()
     {
@@ -39,6 +51,8 @@ public class GameManager : NetworkBehaviour
         {
             Destroy(gameObject);
         }
+
+        IsGamePaused = true;
     }
 
     public void SetupGame(GameMode mode)

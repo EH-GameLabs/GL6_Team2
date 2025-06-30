@@ -39,15 +39,59 @@ public class Grapple3D : MonoBehaviour
         }
     }
 
+    /*void FixedUpdate()
+    {
+        if (joint == null) return;
+
+        // Direzione dal centro (ancora) al personaggio
+        Vector3 dirFromAnchor = rb.position - anchorPoint.position;
+        Vector3 radialDir = dirFromAnchor.normalized;
+
+        // Tangente al cerchio nel piano XZ (pendolo 2D su piano verticale)
+        Vector3 tangent = Vector3.Cross(radialDir, Vector3.forward).normalized;
+
+        // Input dell'utente (sinistra/destra)
+        float input = playerInputData.Move.x;
+
+        // Proietta la forza lungo la tangente alla traiettoria circolare
+        Vector3 force = -input * pendulumForce * tangent;
+
+        // Applica solo la componente tangente della forza
+        rb.AddForce(force, ForceMode.Force);
+
+        // [opzionale ma consigliato] forzare sempre il corpo a rimanere esattamente a distanza = corda
+        float desiredDistance = joint.linearLimit.limit;
+        float currentDistance = dirFromAnchor.magnitude;
+
+        if (Mathf.Abs(currentDistance - desiredDistance) > 0.01f)
+        {
+            // Sposta sulla circonferenza
+            Vector3 correctedPos = anchorPoint.position + radialDir * desiredDistance;
+            rb.MovePosition(correctedPos);
+        }
+    }*/
     void FixedUpdate()
     {
-        if (joint != null)
-        {
-            float input = playerInputData.Move.x;
-            Vector3 force = transform.right * input * pendulumForce; // puoi cambiare la forza
-            rb.AddForce(force);
-        }
+        if (joint == null) return;
+
+        Vector3 dirFromAnchor = rb.position - anchorPoint.position;
+        Vector3 radialDir = dirFromAnchor.normalized;
+
+        // Direzione tangente
+        Vector3 tangent = Vector3.Cross(radialDir, Vector3.forward).normalized;
+
+        float input = -playerInputData.Move.x;
+        Vector3 force = input * pendulumForce * tangent;
+
+        rb.AddForce(force, ForceMode.Force);
+
+        // ✅ Elimina velocità radiale (quella che "entra o esce" dalla circonferenza)
+        Vector3 velocity = rb.linearVelocity;
+        float radialSpeed = Vector3.Dot(velocity, radialDir);
+        Vector3 radialVelocity = radialDir * radialSpeed;
+        rb.linearVelocity = velocity - radialVelocity;
     }
+
 
 
     void Update()

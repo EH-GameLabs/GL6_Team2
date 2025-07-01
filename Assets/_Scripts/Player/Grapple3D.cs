@@ -84,6 +84,7 @@ public class Grapple3D : MonoBehaviour
         {
             if (joint == null)
             {
+                SoundManager.Instance.PlaySFXSound(SoundManager.Instance.WebThrow);
                 Attach();
                 isGrappling = true;
                 Debug.Log("Grapple attached to anchor point");

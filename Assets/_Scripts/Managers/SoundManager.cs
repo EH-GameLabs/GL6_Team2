@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class SoundManager : MonoBehaviour
 {
@@ -19,7 +18,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioClip waterDrop;
     [SerializeField] private AudioClip lifeLost;
     [SerializeField] private AudioClip candlestickOn;
-    [SerializeField] private AudioClip candlestickOff;
+    [SerializeField] private AudioClip candlyDie;
     [SerializeField] private AudioClip gameOver;
     [SerializeField] private AudioClip win;
     [SerializeField] private AudioClip candyGrabbed;
@@ -67,7 +66,7 @@ public class SoundManager : MonoBehaviour
         sfxSource.UnPause();
     }
 
-    public void PLaySFXSound(AudioClip clip)
+    public void PlaySFXSound(AudioClip clip)
     {
         if (clip != null)
         {
@@ -93,4 +92,16 @@ public class SoundManager : MonoBehaviour
     {
         return sfxSource.volume;
     }
+
+    public AudioClip WebThrow { get { return webThrow; } }
+    public AudioClip WaterDrop { get { return waterDrop; } }
+    public AudioClip LifeLost { get { return lifeLost; } }
+    public AudioClip CandlestickOn { get { return candlestickOn; } }
+    public AudioClip CandlyDie { get { return candlyDie; } }
+    public AudioClip GameOver { get { return gameOver; } }
+    public AudioClip Win { get { return win; } }
+    public AudioClip CandyGrabbed { get { return candyGrabbed; } }
+
+    public AudioClip BackgroundMusic { get { return backgroundMusic; } }
+    public AudioClip MainMenuMusic { get { return mainMenuMusic; } }
 }

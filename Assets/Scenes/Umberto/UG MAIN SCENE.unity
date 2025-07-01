@@ -1363,16 +1363,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   musicSource: {fileID: 1508787479}
   sfxSource: {fileID: 1508787478}
-  webThrow: {fileID: 0}
-  waterDrop: {fileID: 0}
-  lifeLost: {fileID: 0}
-  candlestickOn: {fileID: 0}
-  candlestickOff: {fileID: 0}
-  gameOver: {fileID: 0}
-  win: {fileID: 0}
-  candyGrabbed: {fileID: 0}
-  backgroundMusic: {fileID: 0}
-  mainMenuMusic: {fileID: 0}
+  webThrow: {fileID: 8300000, guid: adac983185ff64e4897cb07aed3b4a0b, type: 3}
+  waterDrop: {fileID: 8300000, guid: 197b399872c910b4baa96d8e13d6bad9, type: 3}
+  lifeLost: {fileID: 8300000, guid: a44be2697336fb04b94a7e6898f9ca54, type: 3}
+  candlestickOn: {fileID: 8300000, guid: 68e5307f4c13a674e85ccbcd96116d06, type: 3}
+  candlyDie: {fileID: 0}
+  gameOver: {fileID: 8300000, guid: 7e23e30f509e54f4c9ff0e2911d1b2b6, type: 3}
+  win: {fileID: 8300000, guid: 3710edcdc83d8454983c00c37d59e566, type: 3}
+  candyGrabbed: {fileID: 8300000, guid: bc60d5c4d1388c94bbe409228ab09f74, type: 3}
+  backgroundMusic: {fileID: 8300000, guid: 8579ddba31d19544099fe65782c5c604, type: 3}
+  mainMenuMusic: {fileID: 8300000, guid: d3168b5925901c74488ad95871ad06a6, type: 3}
 --- !u!4 &1508787481
 Transform:
   m_ObjectHideFlags: 0

@@ -4,7 +4,7 @@ using UnityEngine;
 public class WaterDrop : NetworkBehaviour
 {
     // parte da un punto in alto e scende verso il basso
-    public float speed = 5f; // velocità di caduta
+    public float speed = 5f; // velocitï¿½ di caduta
 
 
     private void Update()
@@ -25,11 +25,13 @@ public class WaterDrop : NetworkBehaviour
         // Se la goccia colpisce candly
         if (other.transform.GetComponent<PlayerController>().characterId == CharacterID.CharacterB)
         {
+            SoundManager.Instance.PlaySFXSound(SoundManager.Instance.CandlyDie);
             GameManager.Instance.LoseLife(CharacterID.CharacterB);
             Destroy(gameObject);
         }
         else
         {
+            SoundManager.Instance.PlaySFXSound(SoundManager.Instance.WaterDrop);
             Destroy(gameObject);
         }
     }

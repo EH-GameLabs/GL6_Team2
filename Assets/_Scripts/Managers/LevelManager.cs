@@ -129,7 +129,35 @@ public class LevelManager : MonoBehaviour
 
     internal void EndLevel()
     {
+        if (GameManager.Instance.gameMode != GameMode.OnlineMultiplayer)
+        {
+            LevelEnded();
+            return;
+        }
+
+        if (!NetworkManager.Singleton.IsServer) return;
+        EndLevelServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void EndLevelServerRpc()
+    {
+        // Notifica il server che il livello è finito
+        LevelEndedClientRpc();
+    }
+
+    [ClientRpc]
+    private void LevelEndedClientRpc()
+    {
+        // Gestisce la fine del livello su tutti i client
+        LevelEnded();
+    }
+
+    private void LevelEnded()
+    {
         StopAllCoroutines();
+
+        GameManager.Instance.IsGamePaused = true;
         GameStateManager.Instance.CurrentGameState = GameState.Win;
 
         FindAnyObjectByType<WinUI>().SetWinStats(

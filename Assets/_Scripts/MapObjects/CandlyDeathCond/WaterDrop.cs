@@ -20,16 +20,10 @@ public class WaterDrop : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag(tag: "Player"))
-        {
-            Destroy(gameObject);
-        }
-    }
+        if (other.transform.GetComponent<PlayerController>() == null) return;
 
-    private void OnCollisionEnter(Collision collision)
-    {
         // Se la goccia colpisce candly
-        if (collision.transform.GetComponent<PlayerController>().characterId == CharacterID.CharacterB)
+        if (other.transform.GetComponent<PlayerController>().characterId == CharacterID.CharacterB)
         {
             GameManager.Instance.LoseLife(CharacterID.CharacterB);
             Destroy(gameObject);

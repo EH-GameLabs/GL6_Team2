@@ -9,6 +9,7 @@ public class PlayerController : NetworkBehaviour
     [Header("Character Identity")]
     [Tooltip("Imposta questo nell'inspector: CharacterA o CharacterB")]
     public CharacterID characterId;
+    public GameObject characterMesh;
 
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
@@ -238,9 +239,9 @@ public class PlayerController : NetworkBehaviour
     private void FlipCharacter(float horizontalInput)
     {
         if (horizontalInput > 0)
-            spriteRenderer.flipX = false;
+            characterMesh.transform.rotation = Quaternion.Euler(0, 90, 0);
         else if (horizontalInput < 0)
-            spriteRenderer.flipX = true;
+            characterMesh.transform.rotation = Quaternion.Euler(0, -90, 0);
     }
 
     private void CheckGrounded()

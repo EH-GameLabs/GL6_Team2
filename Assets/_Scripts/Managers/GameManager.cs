@@ -24,9 +24,10 @@ public class GameManager : NetworkBehaviour
     [Header("Configuration")]
     [ReadOnly] public GameMode gameMode;
 
+    private bool _isGamePaused = true;
     public bool IsGamePaused
     {
-        get => IsGamePaused;
+        get => _isGamePaused;
         set
         {
             if (value)
@@ -37,7 +38,7 @@ public class GameManager : NetworkBehaviour
             {
                 Time.timeScale = 1f; // Riprende il tempo
             }
-            IsGamePaused = value;
+            _isGamePaused = value;
         }
     }
 
@@ -188,6 +189,7 @@ public class GameManager : NetworkBehaviour
                 {
                     Debug.Log("Spidy has lost all lives!");
 
+                    IsGamePaused = true;
                     GameStateManager.Instance.CurrentGameState = GameState.Lose;
                 }
                 break;
@@ -198,6 +200,7 @@ public class GameManager : NetworkBehaviour
                     Debug.Log("Candly has lost all lives!");
                     // Gestisci la morte di Candly
 
+                    IsGamePaused = true;
                     GameStateManager.Instance.CurrentGameState = GameState.Lose;
                 }
                 break;

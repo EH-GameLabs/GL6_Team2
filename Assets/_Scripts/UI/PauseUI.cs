@@ -26,6 +26,7 @@ public class PauseUI : BaseUI
 
     public void GoToHud()
     {
-        UIManager.Instance.ShowUI(GameState.Playing);
+        GameManager.Instance.IsGamePaused = false;
+        GameStateManager.Instance.CurrentGameState = GameState.Playing;
     }
 }

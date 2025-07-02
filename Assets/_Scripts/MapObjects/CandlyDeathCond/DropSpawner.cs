@@ -13,7 +13,6 @@ public class DropSpawner : MonoBehaviour
     private void Start()
     {
         gameMode = GameManager.Instance.gameMode;
-        transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
 
         if (gameMode == GameMode.OnlineMultiplayer && !NetworkManager.Singleton.IsServer) return;
         StartCoroutine(SpawnDrops());

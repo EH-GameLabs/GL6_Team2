@@ -22,6 +22,7 @@ public class WaterDrop : NetworkBehaviour
     {
         if (other.CompareTag(tag: "Player"))
         {
+            SoundManager.Instance.PlaySFXSound(SoundManager.Instance.WaterDrop);
             Destroy(gameObject);
         }
     }
@@ -31,11 +32,13 @@ public class WaterDrop : NetworkBehaviour
         // Se la goccia colpisce candly
         if (collision.transform.GetComponent<PlayerController>().characterId == CharacterID.CharacterB)
         {
+            SoundManager.Instance.PlaySFXSound(SoundManager.Instance.CandlyDie);
             GameManager.Instance.LoseLife(CharacterID.CharacterB);
             Destroy(gameObject);
         }
         else
         {
+            SoundManager.Instance.PlaySFXSound(SoundManager.Instance.WaterDrop);
             Destroy(gameObject);
         }
     }

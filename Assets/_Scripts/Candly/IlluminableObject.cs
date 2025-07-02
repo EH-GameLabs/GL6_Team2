@@ -37,7 +37,6 @@ public class IlluminableObject : MonoBehaviour, ILightActivator
 
     public void OnLightActivate()
     {
-        Debug.Log("OnLightActivate called on: " + gameObject.name);
         if (isActive)
         {
             currentLightDuration = lightDuration;

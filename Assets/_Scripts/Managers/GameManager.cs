@@ -11,9 +11,18 @@ public class GameManager : NetworkBehaviour
 
     [Header("Game Settings")]
     public int spidyMaxLife = 3;
-    [ReadOnly] public int spidyLife = 3;
+    [ReadOnly] private int spidyLife = 3;
+    public int SpidyLife
+    {
+        get => spidyLife;
+        set
+        {
+            spidyLife = Mathf.Clamp(value, 0, spidyMaxLife);
+            FindAnyObjectByType<HudUI>(FindObjectsInactive.Include).UpdateSpidyLife(spidyLife);
+        }
+    }
     public int candlyMaxLife = 1;
-    [ReadOnly] public int candlyLife = 1;
+    [ReadOnly] private int candlyLife = 1;
 
     [Header("GameObjects Prefabs")]
     public GameObject player1Prefab;
@@ -84,7 +93,7 @@ public class GameManager : NetworkBehaviour
                 break;
         }
 
-        spidyLife = spidyMaxLife;
+        SpidyLife = spidyMaxLife;
         candlyLife = candlyMaxLife;
     }
 
@@ -183,9 +192,11 @@ public class GameManager : NetworkBehaviour
         switch (characterID)
         {
             case CharacterID.CharacterA:
-                spidyLife--;
+                SpidyLife--;
+
+                SoundManager.Instance.PlaySFXSound(SoundManager.Instance.LifeLost);
                 LevelManager.Instance.hasTakenDamage = true;
-                if (spidyLife <= 0)
+                if (SpidyLife <= 0)
                 {
                     Debug.Log("Spidy has lost all lives!");
 

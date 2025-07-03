@@ -177,11 +177,19 @@ public class LevelManager : MonoBehaviour
         StopAllCoroutines();
 
         GameManager.Instance.IsGamePaused = true;
-        GameStateManager.Instance.CurrentGameState = GameState.Win;
+
+        if (currentLevel == Level1)
+        {
+            GameStateManager.Instance.CurrentGameState = GameState.Win;
+        }
+        else if (currentLevel == Level2)
+        {
+            GameStateManager.Instance.CurrentGameState = GameState.DemoCompleted;
+        }
 
         Debug.Log($"Level ended. Candies collected: {GetCandiesCollected()}, Time elapsed: {timeElapsed}s, Damage taken: {GameManager.Instance.SpidyLife}");
 
-        FindAnyObjectByType<WinUI>().SetWinStats(
+        FindAnyObjectByType<WinUI>(FindObjectsInactive.Include).SetWinStats(
             GetCandiesCollected(),
             timeElapsed, timeMaxToGetTheStar,
             GameManager.Instance.SpidyLife);

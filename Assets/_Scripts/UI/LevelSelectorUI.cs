@@ -47,6 +47,7 @@ public class LevelSelectorUI : BaseUI
                 SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(i));
             }
         }
+        GameManager.Instance.ResetPlayersPosition();
         LevelManager.Instance.LoadLevel(levelString);
     }
 

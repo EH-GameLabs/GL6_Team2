@@ -15,4 +15,5 @@ public enum GameState
     Lose,
     LocalMultiplayer,
     LevelSelector,
+    DemoCompleted,
 }

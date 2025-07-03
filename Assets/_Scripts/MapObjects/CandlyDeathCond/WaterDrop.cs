@@ -18,12 +18,12 @@ public class WaterDrop : NetworkBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (other.transform.GetComponent<PlayerController>() == null) return;
+        if (collision.transform.GetComponent<PlayerController>() == null) return;
 
         // Se la goccia colpisce candly
-        if (other.transform.GetComponent<PlayerController>().characterId == CharacterID.CharacterB)
+        if (collision.transform.GetComponent<PlayerController>().characterId == CharacterID.CharacterB)
         {
             SoundManager.Instance.PlaySFXSound(SoundManager.Instance.CandlyDie);
             GameManager.Instance.LoseLife(CharacterID.CharacterB);
@@ -35,4 +35,22 @@ public class WaterDrop : NetworkBehaviour
             Destroy(gameObject);
         }
     }
+
+    //private void OnCollisionEnter(Collider other)
+    //{
+    //    if (other.transform.GetComponent<PlayerController>() == null) return;
+
+    //    // Se la goccia colpisce candly
+    //    if (other.transform.GetComponent<PlayerController>().characterId == CharacterID.CharacterB)
+    //    {
+    //        SoundManager.Instance.PlaySFXSound(SoundManager.Instance.CandlyDie);
+    //        GameManager.Instance.LoseLife(CharacterID.CharacterB);
+    //        Destroy(gameObject);
+    //    }
+    //    else
+    //    {
+    //        SoundManager.Instance.PlaySFXSound(SoundManager.Instance.WaterDrop);
+    //        Destroy(gameObject);
+    //    }
+    //}
 }

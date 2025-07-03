@@ -32,11 +32,11 @@ public class WinUI : BaseUI
 
     private void OnEnable()
     {
-        if (GameManager.Instance.gameMode == GameMode.OnlineMultiplayer && !LobbyManager.Instance.IsHost())
+        if (GameManager.Instance.gameMode == GameMode.OnlineMultiplayer)
         {
             nextLevelButton.SetActive(false);
             levelSelectorButton.SetActive(false);
-            mainMenuButton.SetActive(false);
+            mainMenuButton.SetActive(true);
         }
         else
         {
@@ -124,14 +124,7 @@ public class WinUI : BaseUI
         }
         else
         {
-            if (LobbyManager.Instance.IsHost())
-            {
-                StartNextLeverServerRpc();
-            }
-            else
-            {
-                Debug.LogWarning("Only the host can start the next level in online multiplayer mode.");
-            }
+            StartNextLeverServerRpc();
         }
     }
 

@@ -66,7 +66,6 @@ public class LobbyManager : NetworkBehaviour
 
             // Avvia la coroutine per aggiornare periodicamente la lobby
             StartCoroutine(LobbyUpdateRoutine());
-            Debug.Log("Started Routine");
         }
         catch (Exception ex)
         {

@@ -12,6 +12,7 @@ public class LevelSelectorUI : BaseUI
         Debug.Log("Starting level: " + levelIndex);
         Debug.Log("Is Host: " + LobbyManager.Instance.IsHost());
 
+
         if (GameManager.Instance.gameMode != GameMode.OnlineMultiplayer)
         {
             LoadLevel(levelIndex);
@@ -19,8 +20,16 @@ public class LevelSelectorUI : BaseUI
         else if (LobbyManager.Instance.IsHost())
         {
             LobbyManager.Instance.StartGame();
-            LobbyManager.Instance.levelToStart = levelIndex;
+
+            SetLevelClientRpc(levelIndex);
         }
+    }
+
+    [ClientRpc]
+    private void SetLevelClientRpc(int levelIndex)
+    {
+        Debug.Log("Setting level on client: " + levelIndex);
+        LobbyManager.Instance.levelToStart = levelIndex;
     }
 
     public void LoadLevel(int levelIndex)

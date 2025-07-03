@@ -41,7 +41,7 @@ public class LevelManager : MonoBehaviour
     public string Level1;
     public string Level2;
 
-    private string currentLevel;
+    public string currentLevel;
 
 
     [ServerRpc(RequireOwnership = false)]

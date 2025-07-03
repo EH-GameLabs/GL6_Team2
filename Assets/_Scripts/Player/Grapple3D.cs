@@ -40,15 +40,15 @@ public class Grapple3D : MonoBehaviour
         }
     }
 
-   /* void FixedUpdate()
-   {
-        if (joint != null)
-        {
-            float input = Input.GetAxis("Horizontal");
-            Vector3 force = transform.right * input * pendulumForce; // Puoi cambiare la forza
-            rb.AddForce(force);
-       }
-    }*/
+    /* void FixedUpdate()
+    {
+         if (joint != null)
+         {
+             float input = Input.GetAxis("Horizontal");
+             Vector3 force = transform.right * input * pendulumForce; // Puoi cambiare la forza
+             rb.AddForce(force);
+        }
+     }*/
     void FixedUpdate()
     {
         if (joint == null) return;
@@ -85,7 +85,7 @@ public class Grapple3D : MonoBehaviour
             if (joint == null)
             {
                 SoundManager.Instance.PlaySFXSound(SoundManager.Instance.WebThrow);
-                Attach();
+                AttachServerRpc();
                 isGrappling = true;
                 Debug.Log("Grapple attached to anchor point");
             }
@@ -109,6 +109,18 @@ public class Grapple3D : MonoBehaviour
     public void SetAnchorPoint(Transform newAnchorPoint)
     {
         anchorPoint = newAnchorPoint;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void AttachServerRpc()
+    {
+        AttachClientRpc();
+    }
+
+    [ClientRpc]
+    private void AttachClientRpc()
+    {
+        Attach();
     }
 
     void Attach()

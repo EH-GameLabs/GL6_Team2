@@ -131,20 +131,18 @@ public class PlayerController : NetworkBehaviour
                 break;
 
             case CharacterID.CharacterB:
-                    //if (gameMode == GameMode.SinglePlayer) return;
-                    HandleMovementCandly();
-                    break;
+                //if (gameMode == GameMode.SinglePlayer) return;
+                HandleMovementCandly();
+                break;
         }
     }
 
-    //private void LateUpdate()
-    //{
-    //    if (characterId == CharacterID.CharacterA) return;
+    private void LateUpdate()
+    {
+        if (characterId == CharacterID.CharacterA) return;
 
-    //        HandleMovementCandly();
-
-    //    StayInsideTheCamera();
-    //}
+        StayInsideTheCamera();
+    }
 
     private void StayInsideTheCamera()
     {
@@ -222,7 +220,7 @@ public class PlayerController : NetworkBehaviour
 
         // Modalità multiplayer (il tuo codice preesistente)
         Vector3 targetVelocity = Vector3.zero;
-        if (Mathf.Abs(input.x) > 0.1f) { targetVelocity.x = input.x * moveSpeed; FlipCharacter(input.x); }
+        if (Mathf.Abs(input.x) > 0.1f) { targetVelocity.x = input.x * moveSpeed; }
         if (Mathf.Abs(input.y) > 0.1f) { targetVelocity.y = input.y * moveSpeed; }
         if (targetVelocity != Vector3.zero) rb.linearVelocity = targetVelocity;
         else rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, Vector3.zero, Time.fixedDeltaTime * 8f);

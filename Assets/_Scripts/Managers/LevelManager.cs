@@ -86,6 +86,7 @@ public class LevelManager : MonoBehaviour
         }
 
         candiesCollected = 0;
+        candies.Clear();
         candies.AddRange(FindObjectsByType<Candy>(FindObjectsSortMode.None));
 
         GameManager.Instance.SpidyLife = GameManager.Instance.spidyMaxLife;

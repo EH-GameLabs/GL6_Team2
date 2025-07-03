@@ -911,6 +911,7 @@ MonoBehaviour:
   mainScene: UG MAIN SCENE
   Level1: UG LEVEL 1
   Level2: UG LEVEL 2
+  currentLevel: 
 --- !u!1001 &1252572721
 PrefabInstance:
   m_ObjectHideFlags: 0

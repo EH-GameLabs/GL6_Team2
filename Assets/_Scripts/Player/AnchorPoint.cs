@@ -1,22 +1,33 @@
+using System;
 using UnityEngine;
 
 public class AnchorPoint : MonoBehaviour
 {
-    private MeshRenderer meshRenderer;
+    private SpriteRenderer[] spriteRenderers;
 
     private void Start()
     {
-        meshRenderer = GetComponentInChildren<MeshRenderer>();
-        if (meshRenderer == null)
+        spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+        if (spriteRenderers == null)
         {
             Debug.LogError("MeshRenderer component not found on AnchorPoint.");
         }
-        ChangeMeshRendererColor(Color.red);
+        SetSpriteEnable(false);
     }
 
-    private void ChangeMeshRendererColor(Color color)
+    private void SetSpriteEnable(bool isOpen)
     {
-        meshRenderer.material.color = color;
+        int openIndex = isOpen ? 1 : 0;
+
+        foreach (var spriteRenderer in spriteRenderers)
+        {
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.gameObject.SetActive(false);
+            }
+        }
+
+        spriteRenderers[openIndex].gameObject.SetActive(true);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -29,7 +40,7 @@ public class AnchorPoint : MonoBehaviour
                 grapple.canGrapple = true;
                 grapple.SetAnchorPoint(transform);
                 // animation canGrapple = true
-                ChangeMeshRendererColor(Color.green);
+                SetSpriteEnable(true);
             }
         }
     }
@@ -44,7 +55,7 @@ public class AnchorPoint : MonoBehaviour
                 grapple.canGrapple = false;
                 grapple.SetAnchorPoint(null);
                 // animation canGrapple = false
-                ChangeMeshRendererColor(Color.red);
+                SetSpriteEnable(false);
             }
         }
     }

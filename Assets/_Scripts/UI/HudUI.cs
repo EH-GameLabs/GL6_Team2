@@ -13,17 +13,13 @@ public class HudUI : BaseUI
 
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.Escape))
+        if (Input.GetKeyUp(KeyCode.Escape) && GameManager.Instance.gameMode != GameMode.OnlineMultiplayer)
         {
             GameStateManager.Instance.CurrentGameState = GameState.Paused;
 
             if (GameManager.Instance.gameMode != GameMode.OnlineMultiplayer)
             {
                 GameManager.Instance.IsGamePaused = true;
-            }
-            else
-            {
-                // TODO: gestire online pause
             }
         }
     }

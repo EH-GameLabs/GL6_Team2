@@ -230,4 +230,20 @@ public class GameManager : NetworkBehaviour
                 break;
         }
     }
+
+    internal void ResetPlayersPosition()
+    {
+        PlayerController[] gameObjects = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+        foreach (PlayerController player in gameObjects)
+        {
+            if (player.characterId == CharacterID.CharacterA)
+            {
+                player.transform.position = player1SpawnPoint.position;
+            }
+            else if (player.characterId == CharacterID.CharacterB)
+            {
+                player.transform.position = player2SpawnPoint.position;
+            }
+        }
+    }
 }

@@ -30,4 +30,9 @@ public class LevelSelectorUI : BaseUI
         }
         LevelManager.Instance.LoadLevel(levelString);
     }
+
+    public void GoToMainMenu()
+    {
+        SceneManager.LoadScene(LevelManager.Instance.mainScene, LoadSceneMode.Single);
+    }
 }

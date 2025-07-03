@@ -41,6 +41,8 @@ public class LevelManager : MonoBehaviour
     public string Level1;
     public string Level2;
 
+    private string currentLevel;
+
 
     [ServerRpc(RequireOwnership = false)]
     public void StartLevelServerRpc(string scene)
@@ -61,6 +63,7 @@ public class LevelManager : MonoBehaviour
         // carica il livello
         SceneManager.LoadScene(scene, LoadSceneMode.Additive);
         SceneManager.sceneLoaded += OnSceneLoaded;
+        currentLevel = scene;
     }
 
     private void OnDestroy()
@@ -182,5 +185,10 @@ public class LevelManager : MonoBehaviour
             GetCandiesCollected(),
             timeElapsed, timeMaxToGetTheStar,
             GameManager.Instance.SpidyLife);
+    }
+
+    internal string GetCurrentLevel()
+    {
+        return currentLevel;
     }
 }

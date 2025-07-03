@@ -130,21 +130,16 @@ public class PlayerController : NetworkBehaviour
                 HandleMovementSpidy();
                 break;
 
-            case CharacterID.CharacterB:
-                if (gameMode == GameMode.SinglePlayer) return;
-                HandleMovementCandly();
-                break;
+                //case CharacterID.CharacterB:
+                //    if (gameMode == GameMode.SinglePlayer) return;
+                //    HandleMovementCandly();
+                //    break;
         }
     }
 
     private void LateUpdate()
     {
         if (characterId == CharacterID.CharacterA) return;
-
-        if (gameMode == GameMode.OnlineMultiplayer && !IsOwner)
-        {
-            return;
-        }
 
         if (gameMode == GameMode.SinglePlayer)
         {

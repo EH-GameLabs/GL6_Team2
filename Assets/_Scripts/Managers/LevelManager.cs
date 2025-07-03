@@ -153,7 +153,7 @@ public class LevelManager : MonoBehaviour
             return;
         }
 
-        if (!LobbyManager.Instance.IsHost()) return;
+        //if (!LobbyManager.Instance.IsHost()) return;
         EndLevelServerRpc();
     }
 

@@ -23,7 +23,7 @@ public class LobbyManager : NetworkBehaviour
     public static Lobby CurrentLobby { get; private set; }
 
     private RoomUI roomUI;
-    internal int levelToStart;
+    public int levelToStart;
 
     private void Awake()
     {
@@ -188,7 +188,15 @@ public class LobbyManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void SerializeGameServerRpc()
     {
+        SetLevelClientRpc(levelToStart);
         SerializeGameClientRpc();
+    }
+
+    [ClientRpc]
+    private void SetLevelClientRpc(int levelIndex)
+    {
+        Debug.Log("Setting level on client: " + levelIndex);
+        levelToStart = levelIndex;
     }
 
     [ClientRpc]

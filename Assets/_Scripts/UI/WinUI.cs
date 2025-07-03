@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -95,6 +96,38 @@ public class WinUI : BaseUI
     }
 
     public void GoToNextLevel()
+    {
+        if (GameManager.Instance.gameMode != GameMode.OnlineMultiplayer)
+        {
+            LoadLevel();
+        }
+        else
+        {
+            if (LobbyManager.Instance.IsHost())
+            {
+                StartNextLeverServerRpc();
+            }
+            else
+            {
+                Debug.LogWarning("Only the host can start the next level in online multiplayer mode.");
+            }
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void StartNextLeverServerRpc()
+    {
+        StartNextLevelClientRpc();
+    }
+
+    [ClientRpc]
+    private void StartNextLevelClientRpc()
+    {
+        // Avvia il livello su tutti i client
+        LoadLevel();
+    }
+
+    private void LoadLevel()
     {
         if (SceneManager.sceneCount > 1)
         {

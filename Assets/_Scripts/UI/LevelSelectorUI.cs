@@ -1,12 +1,30 @@
+using System;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelSelectorUI : BaseUI
 {
+    string levelString = "";
+
     public void StartLevel(int levelIndex)
     {
-        string levelString = "";
+        Debug.Log("Starting level: " + levelIndex);
+        Debug.Log("Is Host: " + LobbyManager.Instance.IsHost());
 
+        if (GameManager.Instance.gameMode != GameMode.OnlineMultiplayer)
+        {
+            LoadLevel(levelIndex);
+        }
+        else if (LobbyManager.Instance.IsHost())
+        {
+            LobbyManager.Instance.StartGame();
+            LobbyManager.Instance.levelToStart = levelIndex;
+        }
+    }
+
+    public void LoadLevel(int levelIndex)
+    {
         switch (levelIndex)
         {
             case 1:

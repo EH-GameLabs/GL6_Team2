@@ -91,7 +91,6 @@ public class LevelManager : MonoBehaviour
         GameManager.Instance.SpidyLife = GameManager.Instance.spidyMaxLife;
         GameManager.Instance.CandlyLife = GameManager.Instance.candlyMaxLife;
 
-
         GameStateManager.Instance.CurrentGameState = GameState.Playing;
         GameManager.Instance.IsGamePaused = false;
 

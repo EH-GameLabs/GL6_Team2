@@ -23,6 +23,7 @@ public class LobbyManager : NetworkBehaviour
     public static Lobby CurrentLobby { get; private set; }
 
     private RoomUI roomUI;
+    internal int levelToStart;
 
     private void Awake()
     {
@@ -55,6 +56,7 @@ public class LobbyManager : NetworkBehaviour
                 };
 
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                Debug.Log("Player signed in with ID: " + AuthenticationService.Instance.PlayerId);
             }
             else
             {
@@ -64,6 +66,7 @@ public class LobbyManager : NetworkBehaviour
 
             // Avvia la coroutine per aggiornare periodicamente la lobby
             StartCoroutine(LobbyUpdateRoutine());
+            Debug.Log("Started Routine");
         }
         catch (Exception ex)
         {
@@ -74,17 +77,21 @@ public class LobbyManager : NetworkBehaviour
     // Coroutine che aggiorna lo stato della lobby ogni 1.1 secondi
     private IEnumerator LobbyUpdateRoutine()
     {
+        const float UPDATE_INTERVAL = 1.1f;
+
         while (true)
         {
             if (CurrentLobby != null)
             {
-                yield return new WaitForSeconds(1.1f);
+                Debug.Log("Updating lobby: " + CurrentLobby.Id);
                 UpdateLobbyAsync();
             }
             else
             {
-                yield return null;
+                Debug.Log("No current lobby to update.");
             }
+
+            yield return new WaitForSecondsRealtime(UPDATE_INTERVAL);
         }
     }
 
@@ -199,7 +206,7 @@ public class LobbyManager : NetworkBehaviour
             }
         }
 
-        LevelManager.Instance.StartLevelServerRpc(LevelManager.Instance.Level1); // Avvia il livello 1
+        FindAnyObjectByType<LevelSelectorUI>(FindObjectsInactive.Include).LoadLevel(levelToStart);
     }
 
     public async void CreateLobby()
@@ -372,14 +379,19 @@ public class LobbyManager : NetworkBehaviour
         };
     }
 
+    public bool CanStartGame()
+    {
+        if (CurrentLobby.Players.Count == 2)
+        {
+            return true;
+        }
+        Debug.LogWarning("Il gioco può iniziare solo con 2 giocatori.");
+        return false;
+    }
+
     public async void StartGame()
     {
         if (!IsHost()) return;
-        //if (CurrentLobby.Players.Count != 2)
-        //{
-        //    Debug.LogWarning("Il gioco può iniziare solo con 2 giocatori.");
-        //    return;
-        //}
 
         GameStateManager.Instance.CurrentGameState = GameState.Loading;
         try
@@ -413,6 +425,7 @@ public class LobbyManager : NetworkBehaviour
                 }
             });
             CurrentLobby = updatedLobby;
+            Debug.Log("Game started with Relay Join Code: " + relayJoinCode);
 
             //GameStateManager.Instance.CurrentGameState = GameState.Playing;
 
@@ -423,7 +436,7 @@ public class LobbyManager : NetworkBehaviour
         }
     }
 
-    private new bool IsHost()
+    public new bool IsHost()
     {
         return CurrentLobby != null && CurrentLobby.HostId == playerId;
     }

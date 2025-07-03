@@ -37,7 +37,9 @@ public class RoomUI : BaseUI
 
     public void StartGame()
     {
-        LobbyManager.Instance.StartGame();
+        if (!LobbyManager.Instance.CanStartGame()) return;
+
+        GameStateManager.Instance.CurrentGameState = GameState.LevelSelector;
     }
 
     public void LeaveGame()

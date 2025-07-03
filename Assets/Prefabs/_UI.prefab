@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6906563661989889200
 RectTransform:
   m_ObjectHideFlags: 0
@@ -706,7 +706,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8334235769262805608}
         m_TargetAssemblyTypeName: MainMenuUI, Assembly-CSharp
-        m_MethodName: CreateLobby
+        m_MethodName: GoToOnline
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2320,9 +2320,9 @@ RectTransform:
   - {fileID: 435264659074469333}
   m_Father: {fileID: 6906563661989889200}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 596, y: -146}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -368, y: -146}
   m_SizeDelta: {x: 438, y: 147}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2715132055155935257
@@ -6911,9 +6911,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4885842376594077921}
-        m_TargetAssemblyTypeName: JoinUI, Assembly-CSharp
-        m_MethodName: GoBack
+      - m_Target: {fileID: 1715401470981994879}
+        m_TargetAssemblyTypeName: RoomUI, Assembly-CSharp
+        m_MethodName: LeaveGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9265,9 +9265,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4885842376594077921}
-        m_TargetAssemblyTypeName: JoinUI, Assembly-CSharp
-        m_MethodName: JoinLobby
+      - m_Target: {fileID: 1715401470981994879}
+        m_TargetAssemblyTypeName: RoomUI, Assembly-CSharp
+        m_MethodName: JoinRoom
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -12017,7 +12017,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4027478947122205276}
-  - component: {fileID: 4885842376594077921}
+  - component: {fileID: 1715401470981994879}
   - component: {fileID: 3859904895808305041}
   - component: {fileID: 4708422831240974426}
   m_Layer: 5
@@ -12049,7 +12049,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &4885842376594077921
+--- !u!114 &1715401470981994879
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -12058,11 +12058,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 8613616961627595500}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33e4d9b422d5ac9468184593d8dbd0db, type: 3}
+  m_Script: {fileID: 11500000, guid: e53b8093e6bffc348ac28cebabf49716, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameUI: 2
-  lobbyCodeInputField: {fileID: 5187137958401410567}
+  gameUI: 3
+  player1Text: {fileID: 1361223160945055475}
+  player2Text: {fileID: 4074720475674804727}
+  roomCodeText: {fileID: 7404847198457556969}
+  startGameButton: {fileID: 8312641911266049653}
+  roomCodeInputField: {fileID: 5187137958401410567}
 --- !u!222 &3859904895808305041
 CanvasRenderer:
   m_ObjectHideFlags: 0

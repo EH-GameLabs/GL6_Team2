@@ -289,6 +289,12 @@ public class LobbyManager : NetworkBehaviour
             return;
         }
 
+        if (CurrentLobby != null)
+        {
+            await LobbyService.Instance.RemovePlayerAsync(CurrentLobby.Id, playerId);
+            CurrentLobby = null;
+        }
+
         try
         {
             JoinLobbyByCodeOptions options = new JoinLobbyByCodeOptions
@@ -312,17 +318,31 @@ public class LobbyManager : NetworkBehaviour
     {
         if (CurrentLobby == null)
             return;
+
         try
         {
+            // Rimuovi il player dalla lobby
             await LobbyService.Instance.RemovePlayerAsync(CurrentLobby.Id, playerId);
+
+            // Shutdown del NetworkManager
             if (NetworkManager.Singleton.isActiveAndEnabled)
+            {
                 NetworkManager.Singleton.Shutdown();
+            }
+
+            // Cleanup immediato
             CurrentLobby = null;
             GameStateManager.Instance.CurrentGameState = GameState.MainMenu;
+
+            Debug.Log("Left room successfully");
         }
         catch (LobbyServiceException e)
         {
             Debug.LogError("Errore nell'uscita dalla lobby: " + e.Message);
+
+            // Cleanup anche in caso di errore
+            CurrentLobby = null;
+            GameStateManager.Instance.CurrentGameState = GameState.MainMenu;
         }
     }
 

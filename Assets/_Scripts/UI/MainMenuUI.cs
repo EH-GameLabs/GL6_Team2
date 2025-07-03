@@ -22,18 +22,25 @@ public class MainMenuUI : BaseUI
         GameStateManager.Instance.CurrentGameState = GameState.LocalMultiplayer;
     }
 
-    public void CreateLobby()
+    public void GoToOnline()
     {
         GameManager.Instance.gameMode = GameMode.OnlineMultiplayer;
         GameStateManager.Instance.CurrentGameState = GameState.Loading;
         LobbyManager.Instance.CreateLobby();
     }
 
-    public void JoinLobby()
-    {
-        GameManager.Instance.gameMode = GameMode.OnlineMultiplayer;
-        GameStateManager.Instance.CurrentGameState = GameState.Join;
-    }
+    //public void CreateLobby()
+    //{
+    //    GameManager.Instance.gameMode = GameMode.OnlineMultiplayer;
+    //    GameStateManager.Instance.CurrentGameState = GameState.Loading;
+    //    LobbyManager.Instance.CreateLobby();
+    //}
+
+    //public void JoinLobby()
+    //{
+    //    GameManager.Instance.gameMode = GameMode.OnlineMultiplayer;
+    //    GameStateManager.Instance.CurrentGameState = GameState.Join;
+    //}
 
     public void GoToOptions()
     {

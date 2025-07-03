@@ -10,7 +10,9 @@ public class RoomUI : BaseUI
     [SerializeField] public TextMeshProUGUI roomCodeText;
 
     [SerializeField] public GameObject startGameButton;
-    [SerializeField] private GameObject leaveButton;
+
+    [Header("JOIN UI")]
+    [SerializeField] private TMP_InputField roomCodeInputField;
 
     public void UpdatePlayerList(string player1, string player2, bool isHost)
     {
@@ -48,5 +50,19 @@ public class RoomUI : BaseUI
     {
         GUIUtility.systemCopyBuffer = roomCodeText.text.Split(' ')[1];
         Debug.Log("Room code copied to clipboard: " + roomCodeText.text.Split(' ')[1]);
+    }
+
+    // JOIN
+    public void JoinRoom()
+    {
+        string roomCode = roomCodeInputField.text.Trim();
+        if (!string.IsNullOrEmpty(roomCode))
+        {
+            LobbyManager.Instance.JoinLobbyWithCode(roomCode);
+        }
+        else
+        {
+            Debug.LogWarning("Room code cannot be empty!");
+        }
     }
 }

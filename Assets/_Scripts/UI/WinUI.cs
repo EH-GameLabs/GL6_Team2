@@ -25,6 +25,27 @@ public class WinUI : BaseUI
     [SerializeField] private GameObject damageTakenCompleted;
     [SerializeField] private GameObject damageTakenNotCompleted;
 
+    [Header("Buttons")]
+    [SerializeField] private GameObject nextLevelButton;
+    [SerializeField] private GameObject levelSelectorButton;
+    [SerializeField] private GameObject mainMenuButton;
+
+    private void OnEnable()
+    {
+        if (GameManager.Instance.gameMode == GameMode.OnlineMultiplayer && !LobbyManager.Instance.IsHost())
+        {
+            nextLevelButton.SetActive(false);
+            levelSelectorButton.SetActive(false);
+            mainMenuButton.SetActive(false);
+        }
+        else
+        {
+            nextLevelButton.SetActive(true);
+            levelSelectorButton.SetActive(true);
+            mainMenuButton.SetActive(true);
+        }
+    }
+
     public void GoToMainMenu()
     {
         SceneManager.LoadScene(LevelManager.Instance.mainScene, LoadSceneMode.Single);

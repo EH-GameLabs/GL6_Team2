@@ -4261,6 +4261,9 @@ MonoBehaviour:
   emptyHeart: {fileID: 21300000, guid: c507f12db268b6c40a20ff771fc2b109, type: 3}
   damageTakenCompleted: {fileID: 3499580174664024899}
   damageTakenNotCompleted: {fileID: 1080353399578278108}
+  nextLevelButton: {fileID: 4113125594216036350}
+  levelSelectorButton: {fileID: 4446416384576590204}
+  mainMenuButton: {fileID: 9058816424893857470}
 --- !u!222 &4016277340701744414
 CanvasRenderer:
   m_ObjectHideFlags: 0

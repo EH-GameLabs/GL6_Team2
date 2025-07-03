@@ -130,24 +130,21 @@ public class PlayerController : NetworkBehaviour
                 HandleMovementSpidy();
                 break;
 
-                //case CharacterID.CharacterB:
-                //    if (gameMode == GameMode.SinglePlayer) return;
-                //    HandleMovementCandly();
-                //    break;
+            case CharacterID.CharacterB:
+                    //if (gameMode == GameMode.SinglePlayer) return;
+                    HandleMovementCandly();
+                    break;
         }
     }
 
-    private void LateUpdate()
-    {
-        if (characterId == CharacterID.CharacterA) return;
+    //private void LateUpdate()
+    //{
+    //    if (characterId == CharacterID.CharacterA) return;
 
-        if (gameMode == GameMode.SinglePlayer)
-        {
-            HandleMovementCandly();
-        }
+    //        HandleMovementCandly();
 
-        StayInsideTheCamera();
-    }
+    //    StayInsideTheCamera();
+    //}
 
     private void StayInsideTheCamera()
     {
@@ -216,7 +213,7 @@ public class PlayerController : NetworkBehaviour
             Vector2 target = world3d;
 
             Vector2 current = rb.position;
-            Vector2 newPos = Vector2.MoveTowards(current, target, moveSpeed * Time.fixedDeltaTime);
+            Vector2 newPos = Vector2.MoveTowards(current, target, moveSpeed * 5 * Time.fixedDeltaTime);
             rb.MovePosition(newPos);
             FlipCharacter(newPos.x - current.x);
             return;

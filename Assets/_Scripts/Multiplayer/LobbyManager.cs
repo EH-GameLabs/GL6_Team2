@@ -132,10 +132,14 @@ public class LobbyManager : NetworkBehaviour
                             NetworkManager.Singleton.OnClientConnectedCallback += (ulong clientId) =>
                             {
                                 Debug.Log($"Client {clientId} connected to the host.");
-                                if (NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost)
+                                //if (NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost)
+                                //{
+                                //    // Chiama la ServerRpc
+                                //    SerializeGameServerRpc();
+                                //}
+                                if (NetworkManager.Singleton.IsHost)
                                 {
-                                    // Chiama la ServerRpc
-                                    SerializeGameServerRpc();
+                                    SetLevelClientRpc(levelToStart);
                                 }
                             };
 
@@ -188,7 +192,6 @@ public class LobbyManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void SerializeGameServerRpc()
     {
-        SetLevelClientRpc(levelToStart);
         SerializeGameClientRpc();
     }
 
@@ -197,6 +200,8 @@ public class LobbyManager : NetworkBehaviour
     {
         Debug.Log("Setting level on client: " + levelIndex);
         levelToStart = levelIndex;
+
+        SerializeGameClientRpc();
     }
 
     [ClientRpc]

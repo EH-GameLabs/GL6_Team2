@@ -129,20 +129,7 @@ public class LobbyManager : NetworkBehaviour
                             //UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
                             //transport.SetRelayServerData(relayServerData);
 
-                            NetworkManager.Singleton.OnClientConnectedCallback += (ulong clientId) =>
-                            {
-                                Debug.Log($"Client {clientId} connected to the host.");
-                                if (NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost)
-                                {
-                                    // Chiama la ServerRpc
-                                    Debug.LogError("SONO UN FIGLIO DI TROIA");
-                                }
-                                if (NetworkManager.Singleton.IsServer)
-                                {
-                                    Debug.LogError("Setting level on host: " + levelToStart);
-                                    SetLevelClientRpc(levelToStart);
-                                }
-                            };
+                            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
 
                             if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost)
                             {
@@ -190,6 +177,45 @@ public class LobbyManager : NetworkBehaviour
         }
     }
 
+    private void OnClientConnected(ulong clientId)
+    {
+        Debug.Log($"Client {clientId} connected to the host.");
+
+        // Questo codice viene eseguito sia sull'host che sui client
+        if (NetworkManager.Singleton.IsHost)
+        {
+            // Codice che viene eseguito solo sull'host
+            Debug.Log($"Host: Client {clientId} si è connesso");
+
+            // Invia il livello al client appena connesso
+            SetLevelClientRpc(levelToStart);
+        }
+        else if (NetworkManager.Singleton.IsClient)
+        {
+            // Codice che viene eseguito solo sui client (non host)
+            Debug.Log($"Client: Altro client {clientId} si è connesso");
+
+            // Se questo client si è appena connesso, richiedi il livello all'host
+            if (clientId == NetworkManager.Singleton.LocalClientId)
+            {
+                RequestLevelFromHostServerRpc();
+            }
+        }
+    }
+
+    // Metodo per richiedere il livello all'host
+    [ServerRpc(RequireOwnership = false)]
+    public void RequestLevelFromHostServerRpc(ServerRpcParams rpcParams = default)
+    {
+        // Ottieni l'ID del client che ha fatto la richiesta
+        ulong clientId = rpcParams.Receive.SenderClientId;
+
+        Debug.Log($"Client {clientId} ha richiesto il livello corrente");
+
+        // Invia il livello al client specifico
+        SetLevelClientRpc(levelToStart);
+    }
+
     [ServerRpc(RequireOwnership = false)]
     public void SerializeGameServerRpc()
     {
@@ -201,7 +227,6 @@ public class LobbyManager : NetworkBehaviour
     {
         Debug.Log("Setting level on client: " + levelIndex);
         levelToStart = levelIndex;
-
         SerializeGameClientRpc();
     }
 
@@ -210,6 +235,7 @@ public class LobbyManager : NetworkBehaviour
     {
         Debug.Log("Game state serialized and sent to clients.");
         GameManager.Instance.SetupGame(GameMode.OnlineMultiplayer);
+
         PlayerController[] Characters = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
         foreach (PlayerController character in Characters)
         {

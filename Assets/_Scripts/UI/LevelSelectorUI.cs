@@ -19,6 +19,7 @@ public class LevelSelectorUI : BaseUI
         }
         else if (LobbyManager.Instance.IsHost())
         {
+            LobbyManager.Instance.levelToStart = levelIndex;
             LobbyManager.Instance.StartGame();
         }
     }

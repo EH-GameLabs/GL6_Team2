@@ -132,13 +132,14 @@ public class LobbyManager : NetworkBehaviour
                             NetworkManager.Singleton.OnClientConnectedCallback += (ulong clientId) =>
                             {
                                 Debug.Log($"Client {clientId} connected to the host.");
-                                //if (NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost)
-                                //{
-                                //    // Chiama la ServerRpc
-                                //    SerializeGameServerRpc();
-                                //}
-                                if (NetworkManager.Singleton.IsHost)
+                                if (NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsHost)
                                 {
+                                    // Chiama la ServerRpc
+                                    Debug.LogError("SONO UN FIGLIO DI TROIA");
+                                }
+                                if (NetworkManager.Singleton.IsServer)
+                                {
+                                    Debug.LogError("Setting level on host: " + levelToStart);
                                     SetLevelClientRpc(levelToStart);
                                 }
                             };

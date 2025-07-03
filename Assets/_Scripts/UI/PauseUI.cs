@@ -13,20 +13,25 @@ public class PauseUI : BaseUI
         {
             NetworkManager.Singleton.Shutdown();
         }
-        SceneManager.LoadScene("MainScene", LoadSceneMode.Single);
 
-        SceneManager.sceneLoaded += (scene, mode) =>
-        {
-            if (scene.name == "MainScene")
-            {
-                GameStateManager.Instance.CurrentGameState = GameState.MainMenu;
-            }
-        };
+        SceneManager.LoadScene(LevelManager.Instance.mainScene, LoadSceneMode.Single);
     }
 
     public void GoToHud()
     {
         GameManager.Instance.IsGamePaused = false;
         GameStateManager.Instance.CurrentGameState = GameState.Playing;
+    }
+
+    public void ExitLevel()
+    {
+        if (SceneManager.sceneCount > 1)
+        {
+            for (int i = 1; i < SceneManager.sceneCount; i++)
+            {
+                SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(i));
+            }
+        }
+        GameStateManager.Instance.CurrentGameState = GameState.LevelSelector;
     }
 }

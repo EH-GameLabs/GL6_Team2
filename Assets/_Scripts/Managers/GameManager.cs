@@ -21,8 +21,18 @@ public class GameManager : NetworkBehaviour
             FindAnyObjectByType<HudUI>(FindObjectsInactive.Include).UpdateSpidyLife(spidyLife);
         }
     }
+
     public int candlyMaxLife = 1;
     [ReadOnly] private int candlyLife = 1;
+    public int CandlyLife
+    {
+        get => candlyLife;
+        set
+        {
+            candlyLife = Mathf.Clamp(value, 0, candlyMaxLife);
+            //FindAnyObjectByType<HudUI>(FindObjectsInactive.Include).UpdateCandlyLife(candlyLife);
+        }
+    }
 
     [Header("GameObjects Prefabs")]
     public GameObject player1Prefab;

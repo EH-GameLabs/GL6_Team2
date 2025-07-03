@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,6 +25,7 @@ public class LevelManager : MonoBehaviour
     [Header("First Star")]
     public int candiesCollected = 0;
     List<ICollectibles> candies = new List<ICollectibles>();
+    [Range(0, 100)] public int candiesPercentageToGetTheStar = 80;
 
     // STELLA 2
     [Header("Second Star")]
@@ -63,6 +63,15 @@ public class LevelManager : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
     private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
     {
         Debug.Log("Scene loaded: " + arg0.name);
@@ -73,9 +82,16 @@ public class LevelManager : MonoBehaviour
             return;
         }
 
+        candiesCollected = 0;
         candies.AddRange(FindObjectsByType<Candy>(FindObjectsSortMode.None));
+
+        GameManager.Instance.SpidyLife = GameManager.Instance.spidyMaxLife;
+        GameManager.Instance.CandlyLife = GameManager.Instance.candlyMaxLife;
+
+
         GameStateManager.Instance.CurrentGameState = GameState.Playing;
         GameManager.Instance.IsGamePaused = false;
+
 
         PlayerController[] motors = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
         foreach (PlayerController motor in motors)
@@ -121,10 +137,10 @@ public class LevelManager : MonoBehaviour
         //Debug.Log($"Candy collected! Total: {candiesCollected}/{candies.Count}");
     }
 
-    public bool AreAllCandyCollected()
+    public float GetCandiesCollected()
     {
         // Controlla se tutti gli oggetti sono stati raccolti
-        return candies.Count == candiesCollected;
+        return (float)candiesCollected / (float)candies.Count;
     }
 
     internal void EndLevel()
@@ -160,9 +176,11 @@ public class LevelManager : MonoBehaviour
         GameManager.Instance.IsGamePaused = true;
         GameStateManager.Instance.CurrentGameState = GameState.Win;
 
+        Debug.Log($"Level ended. Candies collected: {GetCandiesCollected()}, Time elapsed: {timeElapsed}s, Damage taken: {GameManager.Instance.SpidyLife}");
+
         FindAnyObjectByType<WinUI>().SetWinStats(
-            AreAllCandyCollected(),
-            timeElapsed <= timeMaxToGetTheStar,
-            !hasTakenDamage);
+            GetCandiesCollected(),
+            timeElapsed, timeMaxToGetTheStar,
+            GameManager.Instance.SpidyLife);
     }
 }

@@ -14,4 +14,5 @@ public enum GameState
     Win,
     Lose,
     LocalMultiplayer,
+    LevelSelector,
 }

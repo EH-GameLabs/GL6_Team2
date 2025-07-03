@@ -5,19 +5,6 @@ using UnityEngine;
 
 public class MainMenuUI : BaseUI
 {
-    [Header("Main Menu UI Elements")]
-    [SerializeField] private TMP_InputField playerNameInputField;
-
-    private void Start()
-    {
-        playerNameInputField.onValueChanged.AddListener(OnPlayerNameChanged);
-        playerNameInputField.text = PlayerPrefs.GetString("Name", "Player");
-    }
-
-    private void OnPlayerNameChanged(string newName)
-    {
-        PlayerPrefs.SetString("Name", newName);
-    }
 
     public void StartSinglePlayer()
     {
@@ -26,7 +13,7 @@ public class MainMenuUI : BaseUI
         GameManager.Instance.SetupGame(GameMode.SinglePlayer);
 
         // DEBUG
-        LevelManager.Instance.LoadLevel(LevelManager.Instance.Level1);
+        GameStateManager.Instance.CurrentGameState = GameState.LevelSelector;
     }
 
     public void StartLocalMultiplayer()

@@ -238,6 +238,8 @@ public class PlayerController : NetworkBehaviour
 
     private void FlipCharacter(float horizontalInput)
     {
+        if (characterId == CharacterID.CharacterB) return;
+
         if (horizontalInput > 0)
             characterMesh.transform.rotation = Quaternion.Euler(0, 90, 0);
         else if (horizontalInput < 0)

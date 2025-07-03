@@ -43,7 +43,7 @@ public class IlluminableObject : MonoBehaviour, ILightActivator
             return;
         }
 
-        SoundManager.Instance.PlaySFXSound(SoundManager.Instance.CandlestickOn);
+        
         if (GameManager.Instance.gameMode == GameMode.OnlineMultiplayer)
         {
             OnLightActivateServerRpc();
@@ -101,6 +101,11 @@ public class IlluminableObject : MonoBehaviour, ILightActivator
     {
         onLightDeactivate?.Invoke();
         isActive = false;
+    }
+
+    public void PlaySound()
+    {
+        SoundManager.Instance.PlaySFXSound(SoundManager.Instance.CandlestickOn);
     }
 
     // tutte le possibili actions base

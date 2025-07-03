@@ -89,7 +89,7 @@ MonoBehaviour:
   jumpForce: 8
   gravityScale: 2
   groundCheck: {fileID: 7566565178634795166}
-  groundCheckRadius: 0.2
+  groundCheckRadius: 0.1
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 256
@@ -260,7 +260,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.82
+  m_Radius: 0.8
   m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!120 &2032218730242638082
 LineRenderer:
@@ -388,7 +388,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.48
+  m_Radius: 0.5
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0.5, z: 0}

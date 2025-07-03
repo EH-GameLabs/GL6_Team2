@@ -141,7 +141,9 @@ public class GameManager : NetworkBehaviour
         }
 
         GameObject p1 = Instantiate(player1Prefab, player1SpawnPoint.position, Quaternion.identity);
+        //p1.transform.position.Set(player1SpawnPoint.position.x, player1SpawnPoint.position.y, 0);
         GameObject p2 = Instantiate(player2Prefab, player2SpawnPoint.position, Quaternion.identity);
+        p2.transform.position.Set(player2SpawnPoint.position.x, player2SpawnPoint.position.y, 0);
 
         if (!p1.TryGetComponent<PlayerInput>(out var player1Input))
         {

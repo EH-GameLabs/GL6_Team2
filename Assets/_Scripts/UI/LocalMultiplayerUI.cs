@@ -6,6 +6,10 @@ using UnityEngine.InputSystem;
 
 public class LocalMultiplayerUI : BaseUI
 {
+    [Header("Slots")]
+    [SerializeField] private Transform player1Slot;
+    [SerializeField] private Transform player2Slot;
+
     [Header("Local Multiplayer UI Elements")]
     [SerializeField] private GameObject padUIPrefab1;
     [SerializeField] private GameObject padUIPrefab2;
@@ -74,17 +78,13 @@ public class LocalMultiplayerUI : BaseUI
         if (index == 0)
         {
             player1Index = right ? 1 : 0;
-            padUIPrefab1.transform.localPosition = right ?
-                new Vector3(300, -50, transform.localPosition.z) :
-                new Vector3(-300, -50, transform.localPosition.z);
+            padUIPrefab1.transform.SetParent(right ? player2Slot : player1Slot, false);
             Debug.Log($"Player 1 navigated to index: {player1Index}");
         }
         else if (index == 1)
         {
             player2Index = right ? 1 : 0;
-            padUIPrefab2.transform.localPosition = right ?
-                new Vector3(300, -200, transform.localPosition.z) :
-                new Vector3(-300, -200, transform.localPosition.z);
+            padUIPrefab2.transform.SetParent(right ? player2Slot : player1Slot, false);
             Debug.Log($"Player 2 navigated to index: {player2Index}");
         }
     }

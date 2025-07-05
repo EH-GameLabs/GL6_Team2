@@ -474,7 +474,7 @@ Transform:
   m_GameObject: {fileID: 8445458336004238924}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.3, z: 2.119}
+  m_LocalPosition: {x: 0, y: 1.3, z: 0}
   m_LocalScale: {x: 0.92929, y: 0.92929, z: 0.92929}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -672,7 +672,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 048e2d837d0acd74cacfb0138c54572f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.153
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 048e2d837d0acd74cacfb0138c54572f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -705,7 +705,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 048e2d837d0acd74cacfb0138c54572f, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: a6066712287250741a88fc59dec26c7e, type: 2}
+      objectReference: {fileID: 2100000, guid: b168fad33605f364d89e8f2c3e640e07, type: 2}
     - target: {fileID: 919132149155446097, guid: 048e2d837d0acd74cacfb0138c54572f, type: 3}
       propertyPath: m_Name
       value: candela

@@ -206,13 +206,14 @@ public class PlayerController : NetworkBehaviour
     {
         if (GameManager.Instance.gameMode == GameMode.SinglePlayer)
         {
-            Vector3 screenPoint = new Vector3(input.x, input.y, Camera.main.nearClipPlane);
+            Vector3 screenPoint = new Vector3(input.x, input.y, Camera.main.WorldToScreenPoint(transform.position).z);
             Vector3 world3d = Camera.main.ScreenToWorldPoint(screenPoint);
-            Vector2 target = world3d;
-
+            Vector2 target = new Vector2(world3d.x, world3d.y);
             Vector2 current = rb.position;
             Vector2 newPos = Vector2.MoveTowards(current, target, moveSpeed * 5 * Time.fixedDeltaTime);
-            rb.MovePosition(newPos);
+
+            // Forza Z = 2
+            rb.MovePosition(new Vector3(newPos.x, newPos.y, 2.16f));
             FlipCharacter(newPos.x - current.x);
             return;
         }

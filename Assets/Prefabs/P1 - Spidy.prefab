@@ -86,13 +86,13 @@ MonoBehaviour:
   characterId: 0
   characterMesh: {fileID: 2824047828506981294}
   moveSpeed: 5
-  jumpForce: 8
+  jumpForce: 8.5
   gravityScale: 2
   groundCheck: {fileID: 7566565178634795166}
   groundCheckRadius: 0.1
   groundLayerMask:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 769
   currentInput:
     Move: {x: 0, y: 0}
     Look: {x: 0, y: 0}

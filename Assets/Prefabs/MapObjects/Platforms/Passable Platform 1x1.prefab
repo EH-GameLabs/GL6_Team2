@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 263639506505401367}
   - component: {fileID: 6064738689152552553}
   - component: {fileID: 5835076841156333132}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -119,7 +119,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3197895867923191735}
   - component: {fileID: 2722952707913695326}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -207,7 +207,7 @@ GameObject:
   - component: {fileID: 8592034034305538723}
   - component: {fileID: -5384966064183290069}
   - component: {fileID: 5406847780040900128}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Passable Platform 1x1
   m_TagString: PassablePlatform
   m_Icon: {fileID: 0}

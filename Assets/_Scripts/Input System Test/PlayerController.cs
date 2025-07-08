@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -271,35 +272,53 @@ public class PlayerController : NetworkBehaviour
         // Controlla se il personaggio sta attraversando una piattaforma passabile
         if (rb.linearVelocity.y > 0)
         {
-            //Debug.Log($"Character {characterId} is moving up, checking for passable platforms.");
-
             // Versione migliorata con distanza limitata e controllo distanza minima
-            float rayDistance = 2f; // Limita la distanza del raycast
-            if (Physics.Raycast(transform.position, Vector3.up, out RaycastHit hit, rayDistance))
+            float sphereRadius = 2f; // Limita la distanza del raycast
+            PassablePlatform[] platforms = Physics.OverlapSphere(transform.position, sphereRadius, LayerMask.GetMask("Passable"))
+                .Select(c => c.GetComponent<PassablePlatform>())
+                .Where(p => p != null)
+                .ToArray();
+            Debug.Log($"UP - Found {platforms.Length} passable platforms for character {characterId}.");
+
+            if (platforms.Length > 0)
             {
-                // Verifica che non sia troppo vicino (evita falsi positivi)
-                if (hit.distance > 0.1f)
+                foreach (var platform in platforms)
                 {
-                    // CORREZIONE: usa hit.collider invece di transform
-                    if (hit.collider.TryGetComponent<PassablePlatform>(out PassablePlatform passablePlatform))
+                    if (platform != null)
                     {
-                        //Debug.Log($"Character {characterId} is passing through a passable platform: {hit.collider.name}");
-                        passablePlatform.SetTrigger(true);
+                        platform.SetTrigger(true); // Imposta la piattaforma come passabile
                     }
                 }
             }
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hitDown, rayDistance))
+            else
             {
-                // Verifica che non sia troppo vicino (evita falsi positivi)
-                if (hitDown.distance > 0.2f)
+                Debug.LogWarning($"Character {characterId} is not passing through any platforms.");
+            }
+        }
+        else if (rb.linearVelocity.y < 0)
+        {
+            // Versione migliorata con distanza limitata e controllo distanza minima
+            float sphereRadius = 2f; // Limita la distanza del raycast
+            PassablePlatform[] platforms = Physics.OverlapSphere(transform.position, sphereRadius, LayerMask.GetMask("Passable"))
+                .Select(c => c.GetComponent<PassablePlatform>())
+                .Where(p => p != null)
+                .ToArray();
+
+            Debug.Log($"DOWN - Found {platforms.Length} passable platforms for character {characterId}.");
+
+            if (platforms.Length > 0)
+            {
+                foreach (var platform in platforms)
                 {
-                    // CORREZIONE: usa hitDown.collider invece di transform
-                    if (hitDown.collider.TryGetComponent<PassablePlatform>(out PassablePlatform passablePlatformDown))
+                    if (platform != null)
                     {
-                        //Debug.Log($"Character {characterId} is passing through a passable platform: {hitDown.collider.name}");
-                        passablePlatformDown.SetTrigger(false);
+                        platform.SetTrigger(false); // Imposta la piattaforma come non passabile
                     }
                 }
+            }
+            else
+            {
+                Debug.LogWarning($"Character {characterId} is not passing through any platforms.");
             }
         }
     }

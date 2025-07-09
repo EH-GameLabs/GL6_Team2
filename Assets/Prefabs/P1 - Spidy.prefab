@@ -92,7 +92,7 @@ MonoBehaviour:
   groundCheckRadius: 0.1
   groundLayerMask:
     serializedVersion: 2
-    m_Bits: 769
+    m_Bits: 768
   currentInput:
     Move: {x: 0, y: 0}
     Look: {x: 0, y: 0}

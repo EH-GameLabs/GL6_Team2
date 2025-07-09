@@ -278,7 +278,6 @@ public class PlayerController : NetworkBehaviour
                 .Select(c => c.GetComponent<PassablePlatform>())
                 .Where(p => p != null)
                 .ToArray();
-            Debug.Log($"UP - Found {platforms.Length} passable platforms for character {characterId}.");
 
             if (platforms.Length > 0)
             {
@@ -290,10 +289,6 @@ public class PlayerController : NetworkBehaviour
                     }
                 }
             }
-            else
-            {
-                Debug.LogWarning($"Character {characterId} is not passing through any platforms.");
-            }
         }
         else if (rb.linearVelocity.y < 0)
         {
@@ -304,8 +299,6 @@ public class PlayerController : NetworkBehaviour
                 .Where(p => p != null)
                 .ToArray();
 
-            Debug.Log($"DOWN - Found {platforms.Length} passable platforms for character {characterId}.");
-
             if (platforms.Length > 0)
             {
                 foreach (var platform in platforms)
@@ -315,10 +308,6 @@ public class PlayerController : NetworkBehaviour
                         platform.SetTrigger(false); // Imposta la piattaforma come non passabile
                     }
                 }
-            }
-            else
-            {
-                Debug.LogWarning($"Character {characterId} is not passing through any platforms.");
             }
         }
     }

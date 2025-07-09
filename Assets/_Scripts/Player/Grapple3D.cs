@@ -85,7 +85,7 @@ public class Grapple3D : MonoBehaviour
             if (joint == null)
             {
                 SoundManager.Instance.PlaySFXSound(SoundManager.Instance.WebThrow);
-                AttachClientRpc();
+                AttachServerRpc();
                 isGrappling = true;
                 Debug.Log("Grapple attached to anchor point");
             }
@@ -94,7 +94,7 @@ public class Grapple3D : MonoBehaviour
         {
             if (joint != null)
             {
-                DetachClientRpc();
+                DetachServerRpc();
                 isGrappling = false;
                 Debug.Log("Grapple detached from anchor point.");
             }
@@ -109,6 +109,12 @@ public class Grapple3D : MonoBehaviour
     public void SetAnchorPoint(Transform newAnchorPoint)
     {
         anchorPoint = newAnchorPoint;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void AttachServerRpc()
+    {
+        AttachClientRpc();
     }
 
     [ClientRpc]
@@ -140,6 +146,12 @@ public class Grapple3D : MonoBehaviour
         joint.angularZMotion = ConfigurableJointMotion.Free;
 
         joint.enableCollision = true;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void DetachServerRpc()
+    {
+        DetachClientRpc();
     }
 
     [ClientRpc]
